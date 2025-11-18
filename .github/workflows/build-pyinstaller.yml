@@ -1,0 +1,84 @@
+name: Build (PyInstaller)
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"   # 如需对齐本地版本可改
+          cache: "pip"             # 启用 pip 依赖缓存（自动按 requirements*.txt 缓存）
+      # 说明：setup-python 自带 pip 缓存支持；也可自行用 actions/cache 构造更细粒度 key。:contentReference[oaicite:3]{index=3}
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          if (Test-Path requirements.txt) {
+            pip install -r requirements.txt
+          } else {
+            echo "requirements.txt not found; installing runtime essentials only"
+            pip install PyInstaller==6.16.0
+          }
+
+      - name: Build with PyInstaller
+        shell: pwsh
+        run: |
+          # 确保输出目录存在
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+
+          # 你给定的参数（Windows 下 PyInstaller 6.x 使用 SOURCE:DEST 作为 --add-data 分隔符）
+          # 参考：PyInstaller usage/man pages。:contentReference[oaicite:4]{index=4}
+          pyinstaller `
+            --onedir --contents-directory "." --console `
+            --icon "UIstyles\images\app_logo.ico" `
+            --exclude-module tests --exclude-module pytest `
+            --add-data "UIstyles:UIstyles" `
+            --collect-data PyQt6 `
+            --collect-data reportlab `
+            --collect-data openpyxl `
+            --version-file "version_info.txt" `
+            -y main.py
+
+          # 记录构建目录，PyInstaller 默认为 dist\<name>
+          # 这里名称随主脚本，若 main.py 则是 dist\main
+          $DistDir = "dist\\main"
+          if (-not (Test-Path $DistDir)) {
+            Write-Error "Expected output folder '$DistDir' was not created."
+            exit 1
+          }
+
+      - name: Package onedir as ZIP
+        shell: pwsh
+        run: |
+          $DistDir = "dist\\main"
+          $ZipPath = "dist\\main_onedir.zip"
+          if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
+          # 使用内置压缩；也可改用 7zip
+          Compress-Archive -Path "$DistDir\*" -DestinationPath $ZipPath
+
+      - name: Upload artifact - onedir zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-onedir-zip
+          path: dist/main_onedir.zip
+          if-no-files-found: error
+          retention-days: 14
+      # v4 的 artifact 上传/下载性能更好（注意 GHES 暂不支持 v4）。:contentReference[oaicite:5]{index=5}
+
+      - name: Upload artifact - single EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-exe
+          path: dist/main/main.exe
+          if-no-files-found: error
+          retention-days: 14

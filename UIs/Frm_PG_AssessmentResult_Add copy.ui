@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frm_PG_AssessmentResult_Add</class>
+ <widget class="QDialog" name="Frm_PG_AssessmentResult_Add">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>添加/编辑毁伤结果</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="gb_association_info">
+     <property name="title">
+      <string>关联信息</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_scene_id">
+        <property name="text">
+         <string>场景ID：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ed_scene_id">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="btn_select_scene">
+        <property name="text">
+         <string>选择场景</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_parameter_id">
+        <property name="text">
+         <string>参数ID：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="ed_parameter_id">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #f0f0f0;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="lbl_parameter_note">
+        <property name="text">
+         <string>&lt;font color='gray'&gt;(自动填充)&lt;/font&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lbl_ammunition_id">
+        <property name="text">
+         <string>弹药ID：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="ed_ammunition_id">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #f0f0f0;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="lbl_ammunition_note">
+        <property name="text">
+         <string>&lt;font color='gray'&gt;(自动填充)&lt;/font&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="lbl_target_type">
+        <property name="text">
+         <string>目标类型：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="cmb_target_type">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #f0f0f0;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>机场跑道</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>单机掩蔽库</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>地下指挥所</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="lbl_target_type_note">
+        <property name="text">
+         <string>&lt;font color='gray'&gt;(自动填充)&lt;/font&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="lbl_target_id">
+        <property name="text">
+         <string>目标ID：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="ed_target_id">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #f0f0f0;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="lbl_target_id_note">
+        <property name="text">
+         <string>&lt;font color='gray'&gt;(自动填充)&lt;/font&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="3">
+       <widget class="QPushButton" name="btn_calculate_damage">
+        <property name="text">
+         <string>计算毁伤结果</string>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>35</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string>QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+}
+QPushButton:hover {
+    background-color: #45a049;
+}
+QPushButton:pressed {
+    background-color: #3d8b40;
+}</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gb_crater_params">
+     <property name="title">
+      <string>弹坑参数</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_depth">
+        <property name="text">
+         <string>弹坑深度(m)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ed_depth"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lbl_diameter">
+        <property name="text">
+         <string>弹坑直径(m)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="ed_diameter"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="lbl_volume">
+        <property name="text">
+         <string>弹坑容积(m³)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLineEdit" name="ed_volume"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_area">
+        <property name="text">
+         <string>弹坑面积(m²)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="ed_area"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="lbl_length">
+        <property name="text">
+         <string>弹坑长度(m)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="ed_length"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="lbl_width">
+        <property name="text">
+         <string>弹坑宽度(m)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLineEdit" name="ed_width"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gb_damage_assessment">
+     <property name="title">
+      <string>毁伤评估</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_discturction">
+        <property name="text">
+         <string>结构破坏程度(0-1)：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ed_discturction"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lbl_damage_degree">
+        <property name="text">
+         <string>毁伤等级：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QComboBox" name="cmb_damage_degree">
+        <item>
+         <property name="text">
+          <string>未达到轻度毁伤</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>轻度毁伤</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>中度毁伤</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>重度毁伤</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>完全摧毁</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_save">
+       <property name="text">
+        <string>保存</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_cancel">
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+

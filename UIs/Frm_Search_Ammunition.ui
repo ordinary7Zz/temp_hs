@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frm_Q_Ammunition</class>
+ <widget class="QWidget" name="Frm_Q_Ammunition">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>793</width>
+    <height>611</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>弹药智能检索</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>组合检索条件</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="horizontalSpacing">
+       <number>12</number>
+      </property>
+      <item row="0" column="12">
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="text">
+         <string>弹药编号</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="15">
+       <widget class="QLineEdit" name="txt_maxspeed_b">
+        <property name="text">
+         <string>1.5</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="7" colspan="2">
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>61</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="12">
+       <widget class="QCheckBox" name="checkBox_9">
+        <property name="text">
+         <string>弹药全重</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="7" colspan="3">
+       <widget class="QLineEdit" name="txt_hs_scene">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>m</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
+       <widget class="QCheckBox" name="checkBox_5">
+        <property name="text">
+         <string>弹药直径</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7" colspan="4">
+       <widget class="QLineEdit" name="txt_country">
+        <property name="text">
+         <string>中国</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="16">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Ma</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="8">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="9">
+       <widget class="QLineEdit" name="txt_d_b">
+        <property name="text">
+         <string>2.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="13" colspan="3">
+       <widget class="QLineEdit" name="txt_am_no">
+        <property name="text">
+         <string>XX</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>126</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="13" colspan="3">
+       <spacer name="horizontalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>119</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="txt_len_b">
+        <property name="text">
+         <string>7.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="text">
+         <string>国家 / 地区</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <widget class="QCheckBox" name="checkBox_8">
+        <property name="text">
+         <string>毁伤场景</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="14">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3" colspan="4">
+       <widget class="QPushButton" name="btn_combination">
+        <property name="text">
+         <string>信息查询</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="checkBox_7">
+        <property name="text">
+         <string>毁伤等级</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <spacer name="horizontalSpacer_8">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="13" colspan="3">
+       <widget class="QLineEdit" name="txt_weight">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <widget class="QLineEdit" name="txt_d_a">
+        <property name="text">
+         <string>0.5</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="4">
+       <widget class="QComboBox" name="comboBox"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_4">
+        <property name="text">
+         <string>弹药长度</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="12">
+       <widget class="QCheckBox" name="checkBox_6">
+        <property name="text">
+         <string>最大时速</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="3">
+       <widget class="QLineEdit" name="txt_hs_level">
+        <property name="text">
+         <string>XX</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBox">
+        <property name="text">
+         <string>弹药类型</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="13">
+       <widget class="QLineEdit" name="txt_maxspeed_a">
+        <property name="text">
+         <string>0.3</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="txt_len_a">
+        <property name="text">
+         <string>3.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="9" colspan="4">
+       <widget class="QPushButton" name="btn_condition_reset">
+        <property name="text">
+         <string>条件复位</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="10">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>m</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="11">
+       <spacer name="horizontalSpacer_9">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="5">
+       <spacer name="horizontalSpacer_10">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="5">
+       <spacer name="horizontalSpacer_11">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>智能检索条件</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="horizontalSpacing">
+       <number>20</number>
+      </property>
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer_14">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>74</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="2" colspan="2">
+       <widget class="QPushButton" name="btn_nlp_search">
+        <property name="text">
+         <string>智能检索</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>46</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>智能化检索支持基于弹药模糊关键词、部分描述或者作战需求，智能化的匹配符合条件的弹药数据条目标。</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="2">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>127</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="btn_nlp_rebuild">
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>重建索引</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" rowspan="2">
+       <widget class="QLineEdit" name="txt_nlp">
+        <property name="minimumSize">
+         <size>
+          <width>350</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <spacer name="horizontalSpacer_13">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>46</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="4">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>46</width>
+          <height>21</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="cmb_topk"/>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>46</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>弹药毁伤模型检索结果</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lb_noti">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QTableView" name="tv_result">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>240</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="2">
+       <widget class="QPushButton" name="btn_export">
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>导出查询结果</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

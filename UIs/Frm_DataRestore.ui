@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frm_DataRestore</class>
+ <widget class="QWidget" name="Frm_DataRestore">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>729</width>
+    <height>522</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>数据备份和恢复</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>701</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>数据备份</string>
+   </property>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>80</y>
+      <width>681</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QRadioButton" name="rb_yearly">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>11</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>每年一次</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_monthly">
+     <property name="geometry">
+      <rect>
+       <x>98</x>
+       <y>11</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>每月一次</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_weekly">
+     <property name="geometry">
+      <rect>
+       <x>21</x>
+       <y>11</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>每周一次</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rb_quarterly">
+     <property name="geometry">
+      <rect>
+       <x>175</x>
+       <y>11</y>
+       <width>83</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>每季度一次</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>369</x>
+       <y>13</y>
+       <width>161</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>距离下一次备份剩余（秒）：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_remaintime">
+     <property name="geometry">
+      <rect>
+       <x>525</x>
+       <y>14</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QRadioButton" name="rb_AutoBackup">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>95</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>自动定期备份</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rb_ManualBackup">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>95</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>手动立即备份</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>28</y>
+      <width>54</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>备份路径：</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="txt_BackupPath">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>20</y>
+      <width>461</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(241, 241, 244)</string>
+    </property>
+    <property name="text">
+     <string>D:\</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_Backup">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>140</y>
+      <width>75</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>执行备份</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_SelectPath">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>20</y>
+      <width>75</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择路径</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>200</y>
+     <width>701</width>
+     <height>271</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>数据恢复</string>
+   </property>
+   <widget class="QTableWidget" name="tv_BackupList">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>681</width>
+      <height>201</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btn_Restore">
+   <property name="geometry">
+    <rect>
+     <x>610</x>
+     <y>430</y>
+     <width>75</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>执行恢复</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>440</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>选中的数据文件路径：</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txt_ResotrePath">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>430</y>
+     <width>421</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(241, 241, 244)</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbl_Note">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>490</y>
+     <width>151</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(0, 0, 255);
+font: 12pt &quot;Microsoft YaHei UI&quot;;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>btn_SelectPath</tabstop>
+  <tabstop>rb_AutoBackup</tabstop>
+  <tabstop>rb_weekly</tabstop>
+  <tabstop>rb_monthly</tabstop>
+  <tabstop>rb_quarterly</tabstop>
+  <tabstop>rb_yearly</tabstop>
+  <tabstop>rb_ManualBackup</tabstop>
+  <tabstop>btn_Backup</tabstop>
+  <tabstop>tv_BackupList</tabstop>
+  <tabstop>btn_Restore</tabstop>
+  <tabstop>txt_ResotrePath</tabstop>
+  <tabstop>txt_BackupPath</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

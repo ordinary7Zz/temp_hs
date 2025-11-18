@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frm_MainWindow</class>
+ <widget class="QMainWindow" name="Frm_MainWindow">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>801</width>
+    <height>1239</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>毁伤评估软件</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>801</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="baseSize">
+    <size>
+     <width>3000</width>
+     <height>30</height>
+    </size>
+   </property>
+   <widget class="QMenu" name="menu_AmmunitionManagement">
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
+    </property>
+    <property name="title">
+     <string>弹药毁伤数据模型管理</string>
+    </property>
+    <addaction name="menu_AmmunitionManagement2"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>打击目标数据模型管理</string>
+    </property>
+    <addaction name="menu_RunwayManagement"/>
+    <addaction name="menu_ShelterManagement"/>
+    <addaction name="menu_UCCManagement"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>毁伤效能计算评估</string>
+    </property>
+    <addaction name="menu_DamageScene"/>
+    <addaction name="menu_DamageParameter"/>
+    <addaction name="menu_DamageAssessment"/>
+    <addaction name="menu_AssessmentReport"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>数据智能检索</string>
+    </property>
+    <addaction name="menu_AmmunitionQuery"/>
+    <addaction name="menu_TargetQuery"/>
+    <addaction name="menu_ReportQuery"/>
+   </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>系统综合管理</string>
+    </property>
+    <addaction name="menu_UserMag"/>
+    <addaction name="menu_DataRestore"/>
+    <addaction name="menu_ChangePwd"/>
+    <addaction name="menu_Config"/>
+   </widget>
+   <addaction name="menu_AmmunitionManagement"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+   <addaction name="menu_5"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="separator"/>
+  </widget>
+  <action name="menu_DanYaoMag">
+   <property name="text">
+    <string>弹药毁伤数据模型管理</string>
+   </property>
+  </action>
+  <action name="menu_UserMag">
+   <property name="text">
+    <string>系统用户管理</string>
+   </property>
+  </action>
+  <action name="menu_DataRestore">
+   <property name="text">
+    <string>数据备份和恢复</string>
+   </property>
+  </action>
+  <action name="menu_RunwayManagement">
+   <property name="text">
+    <string>机场跑道数据管理</string>
+   </property>
+  </action>
+  <action name="menu_ShelterManagement">
+   <property name="text">
+    <string>单机掩蔽库数据管理</string>
+   </property>
+  </action>
+  <action name="menu_UCCManagement">
+   <property name="text">
+    <string>地下指挥所数据管理</string>
+   </property>
+  </action>
+  <action name="menu_DamageScene">
+   <property name="text">
+    <string>毁伤场景设置</string>
+   </property>
+  </action>
+  <action name="menu_DamageParameter">
+   <property name="text">
+    <string>毁伤参数管理</string>
+   </property>
+  </action>
+  <action name="menu_DamageAssessment">
+   <property name="text">
+    <string>毁伤效能计算评估</string>
+   </property>
+  </action>
+  <action name="menu_AssessmentReport">
+   <property name="text">
+    <string>毁伤评估报告管理</string>
+   </property>
+  </action>
+  <action name="menu_AmmunitionQuery">
+   <property name="text">
+    <string>弹药智能检索</string>
+   </property>
+  </action>
+  <action name="menu_TargetQuery">
+   <property name="text">
+    <string>打击目标智能检索</string>
+   </property>
+  </action>
+  <action name="menu_ReportQuery">
+   <property name="text">
+    <string>评估报告智能检索</string>
+   </property>
+  </action>
+  <action name="menu_ChangePwd">
+   <property name="text">
+    <string>用户密码修改</string>
+   </property>
+  </action>
+  <action name="menu_AmmunitionManagement2">
+   <property name="text">
+    <string>弹药毁伤数据模型管理</string>
+   </property>
+  </action>
+  <action name="menu_Config">
+   <property name="text">
+    <string>配置数据库连接</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

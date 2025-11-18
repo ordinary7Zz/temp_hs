@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Frm_PG_DamageScene_Add</class>
+ <widget class="QDialog" name="Frm_PG_DamageScene_Add">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>添加/编辑毁伤场景</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="gb_scene_info">
+     <property name="title">
+      <string>场景基本信息</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lbl_scene_code">
+        <property name="text">
+         <string>场景编号：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ed_scene_code">
+        <property name="placeholderText">
+         <string>（必填，唯一）</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lbl_required_1">
+        <property name="minimumSize">
+         <size>
+          <width>13</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>13</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:rgba(255, 0, 0, 255)</string>
+        </property>
+        <property name="text">
+         <string>*</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lbl_scene_name">
+        <property name="text">
+         <string>场景名称：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLineEdit" name="ed_scene_name">
+        <property name="placeholderText">
+         <string>（必填，唯一）</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lbl_required_2">
+        <property name="minimumSize">
+         <size>
+          <width>13</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>13</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color:rgba(255, 0, 0, 255)</string>
+        </property>
+        <property name="text">
+         <string>*</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lbl_offensive">
+        <property name="text">
+         <string>进攻方：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="ed_offensive">
+        <property name="placeholderText">
+         <string>例如：美国</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="lbl_defensive">
+        <property name="text">
+         <string>假想敌：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLineEdit" name="ed_defensive">
+        <property name="placeholderText">
+         <string>例如：印度</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lbl_battle">
+        <property name="text">
+         <string>所在战场：</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QLineEdit" name="ed_battle">
+        <property name="placeholderText">
+         <string>例如：XX海域</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gb_ammunition_info">
+     <property name="title">
+      <string>弹药信息</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_ammo">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_ammo_left">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_ammo_code">
+          <item>
+           <widget class="QLabel" name="lbl_ammunition_code">
+            <property name="text">
+             <string>弹药代码：</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_required_3">
+            <property name="minimumSize">
+             <size>
+              <width>13</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>13</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:rgba(255, 0, 0, 255)</string>
+            </property>
+            <property name="text">
+             <string>*</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="ed_ammunition_code">
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>（必填）</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_ammo_id"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_select_ammunition">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    font-size: 12px;
+    padding: 4px 12px;
+}</string>
+          </property>
+          <property name="text">
+           <string>选择弹药</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_ammunition_detail">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+    color: #333;
+    padding: 12px;
+    background-color: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    line-height: 1.6;
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="gb_target_info">
+     <property name="title">
+      <string>目标信息</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_target">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_target_left">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_target_type">
+          <item>
+           <widget class="QLabel" name="lbl_target_type">
+            <property name="text">
+             <string>目标类型：</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lbl_required_4">
+            <property name="minimumSize">
+             <size>
+              <width>13</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>13</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:rgba(255, 0, 0, 255)</string>
+            </property>
+            <property name="text">
+             <string>*</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cmb_target_type">
+            <property name="minimumSize">
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <item>
+             <property name="text">
+              <string>机场跑道</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>单机掩蔽库</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>地下指挥所</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_target_code">
+          <item>
+           <widget class="QLabel" name="lbl_target_code">
+            <property name="text">
+             <string>目标代码：</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="ed_target_code">
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="placeholderText">
+             <string>（必填）</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_target_id"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_select_target">
+          <property name="minimumSize">
+           <size>
+            <width>100</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>28</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    font-size: 12px;
+    padding: 4px 12px;
+}</string>
+          </property>
+          <property name="text">
+           <string>选择目标</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_target_detail">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel {
+    color: #333;
+    padding: 12px;
+    background-color: #fafafa;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    line-height: 1.6;
+}</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_save">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>保存</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_cancel">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
