@@ -178,3 +178,21 @@ class SQLRepository:
         if entity_cls not in self._META_BY_ENTITY:
             raise ValueError(f"Unsupported entity class: {entity_cls!r}")
         return self._META_BY_ENTITY[entity_cls]
+
+    def value_exists(
+        self,
+        entity_cls: EntityType,
+        field_name: str,
+        value: object,
+        exclude_id: int | None = None,
+    ) -> bool:
+        if value in (None, ""):
+            return False
+        meta = self._meta_from_cls(entity_cls)
+        column = getattr(meta.orm_cls, field_name, None)
+        if column is None:
+            raise AttributeError(f"{meta.orm_cls.__name__} has no column '{field_name}'")
+        stmt = select(meta.orm_cls).where(column == value)
+        if exclude_id is not None:
+            stmt = stmt.where(getattr(meta.orm_cls, meta.primary_key) != exclude_id)
+        return self.session.scalars(stmt.limit(1)).first() is not None

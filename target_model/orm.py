@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from sqlalchemy import String, Float, Integer, DateTime
+from sqlalchemy import String, Float, Integer, DateTime, LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column
 
 from target_model.db import Base
@@ -16,7 +16,7 @@ class AirportRunwayORM(Base):
     runway_name: Mapped[str] = mapped_column("RunwayName", String(60), nullable=False, unique=True, index=True)
     country: Mapped[str | None] = mapped_column("Country", String(60), nullable=True, index=True)
     base: Mapped[str | None] = mapped_column("Base", String(60), nullable=True)
-    runway_picture: Mapped[str | None] = mapped_column("RunwayPicture", String(90), nullable=True)
+    runway_picture: Mapped[bytes | None] = mapped_column("RunwayPicture", LargeBinary, nullable=True)
 
     r_length: Mapped[float] = mapped_column("RLength", Float(asdecimal=False), nullable=False)
     r_width: Mapped[float] = mapped_column("RWidth", Float(asdecimal=False), nullable=False)
@@ -43,7 +43,7 @@ class AirportRunwayORM(Base):
     cs_strength: Mapped[float | None] = mapped_column("CSStrength", Float(asdecimal=False), nullable=True)
     cs_compaction: Mapped[float | None] = mapped_column("CSCompaction", Float(asdecimal=False), nullable=True)
 
-    runway_status: Mapped[int | None] = mapped_column("RunwayStatus", Integer, nullable=True)
+    runway_status: Mapped[int | None] = mapped_column("RunwayStatus", Integer, nullable=True, default=1)
     created_time: Mapped[datetime] = mapped_column(
         "CreatedTime", DateTime(timezone=False), default=datetime.utcnow, nullable=True
     )
@@ -61,7 +61,7 @@ class AircraftShelterORM(Base):
     shelter_name: Mapped[str] = mapped_column("ShelterName", String(60), nullable=False, unique=True, index=True)
     country: Mapped[str | None] = mapped_column("Country", String(60), nullable=True, index=True)
     base: Mapped[str | None] = mapped_column("Base", String(60), nullable=True)
-    shelter_picture: Mapped[str | None] = mapped_column("ShelterPicture", String(90), nullable=True)
+    shelter_picture: Mapped[bytes | None] = mapped_column("ShelterPicture", LargeBinary, nullable=True)
 
     shelter_width: Mapped[float] = mapped_column("ShelterWidth", Float(asdecimal=False), nullable=False)
     shelter_height: Mapped[float] = mapped_column("ShelterHeight", Float(asdecimal=False), nullable=False)
@@ -79,7 +79,8 @@ class AircraftShelterORM(Base):
     soil_layer_thick: Mapped[float] = mapped_column("SoilLayerThick", Float(asdecimal=False), nullable=False)
     disper_layer_material: Mapped[str] = mapped_column("DisperLayerMaterial", String(16), nullable=False)
     disper_layer_thick: Mapped[float] = mapped_column("DisperLayerThick", Float(asdecimal=False), nullable=False)
-    disper_layer_reinforcement: Mapped[str | None] = mapped_column("DisperLayerReinforcement", String(60), nullable=True)
+    disper_layer_reinforcement: Mapped[str | None] = mapped_column("DisperLayerReinforcement", String(60),
+                                                                   nullable=True)
     structure_layer_material: Mapped[str] = mapped_column("StructureLayerMaterial", String(16), nullable=False)
     structure_layer_thick: Mapped[float] = mapped_column("StructureLayerThick", Float(asdecimal=False), nullable=False)
     structure_layer_reinforcement: Mapped[str | None] = mapped_column(
@@ -92,9 +93,10 @@ class AircraftShelterORM(Base):
     anti_kinetic: Mapped[float | None] = mapped_column("AntiKinetic", Float(asdecimal=False), nullable=True)
     resistance_depth: Mapped[float | None] = mapped_column("ResistanceDepth", Float(asdecimal=False), nullable=True)
     nuclear_blast: Mapped[float | None] = mapped_column("NuclearBlast", Float(asdecimal=False), nullable=True)
-    radiation_shielding: Mapped[float | None] = mapped_column("RadiationShielding", Float(asdecimal=False), nullable=True)
+    radiation_shielding: Mapped[float | None] = mapped_column("RadiationShielding", Float(asdecimal=False),
+                                                              nullable=True)
     fire_resistance: Mapped[float | None] = mapped_column("FireResistance", Float(asdecimal=False), nullable=True)
-    shelter_status: Mapped[int | None] = mapped_column("ShelterStatus", Integer, nullable=True)
+    shelter_status: Mapped[int | None] = mapped_column("ShelterStatus", Integer, nullable=True, default=1)
 
     created_time: Mapped[datetime] = mapped_column(
         "CreatedTime", DateTime(timezone=False), default=datetime.utcnow, nullable=True
@@ -102,7 +104,6 @@ class AircraftShelterORM(Base):
     updated_time: Mapped[datetime] = mapped_column(
         "UpdatedTime", DateTime(timezone=False), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True
     )
-
 
 
 class UndergroundCommandPostORM(Base):
@@ -114,16 +115,19 @@ class UndergroundCommandPostORM(Base):
     ucc_name: Mapped[str] = mapped_column("UCCName", String(60), nullable=False, unique=True, index=True)
     country: Mapped[str | None] = mapped_column("Country", String(60), nullable=True, index=True)
     base: Mapped[str | None] = mapped_column("Base", String(60), nullable=True)
-    shelter_picture: Mapped[str | None] = mapped_column("ShelterPicture", String(90), nullable=True)
+    shelter_picture: Mapped[bytes | None] = mapped_column("ShelterPicture", LargeBinary, nullable=True)
     location: Mapped[str | None] = mapped_column("Location", String(60), nullable=True)
 
     rock_layer_materials: Mapped[str] = mapped_column("RockLayerMaterials", String(60), nullable=False)
     rock_layer_thick: Mapped[float] = mapped_column("RockLayerThick", Float(asdecimal=False), nullable=False)
-    rock_layer_strength: Mapped[float | None] = mapped_column("RockLayerStrength", Float(asdecimal=False), nullable=True)
+    rock_layer_strength: Mapped[float | None] = mapped_column("RockLayerStrength", Float(asdecimal=False),
+                                                              nullable=True)
 
     protective_layer_material: Mapped[str] = mapped_column("ProtectiveLayerMaterial", String(60), nullable=False)
-    protective_layer_thick: Mapped[float] = mapped_column("ProtectiveLayerThick", Float(asdecimal=False), nullable=False)
-    protective_layer_strength: Mapped[float] = mapped_column("ProtectiveLayerStrength", Float(asdecimal=False), nullable=False)
+    protective_layer_thick: Mapped[float] = mapped_column("ProtectiveLayerThick", Float(asdecimal=False),
+                                                          nullable=False)
+    protective_layer_strength: Mapped[float] = mapped_column("ProtectiveLayerStrength", Float(asdecimal=False),
+                                                             nullable=False)
 
     lining_layer_material: Mapped[str] = mapped_column("LiningLayerMaterial", String(60), nullable=False)
     lining_layer_thick: Mapped[float] = mapped_column("LiningLayerThick", Float(asdecimal=False), nullable=False)
@@ -136,7 +140,7 @@ class UndergroundCommandPostORM(Base):
     ucc_width: Mapped[float | None] = mapped_column("UCCWidth", Float(asdecimal=False), nullable=True)
     ucc_length: Mapped[float | None] = mapped_column("UCCLength", Float(asdecimal=False), nullable=True)
     ucc_height: Mapped[float | None] = mapped_column("UCCHeight", Float(asdecimal=False), nullable=True)
-    ucc_status: Mapped[int | None] = mapped_column("UCCStatus", Integer, nullable=True)
+    ucc_status: Mapped[int | None] = mapped_column("UCCStatus", Integer, nullable=True, default=1)
 
     created_time: Mapped[datetime] = mapped_column(
         "CreatedTime", DateTime(timezone=False), default=datetime.utcnow, nullable=True
@@ -144,4 +148,3 @@ class UndergroundCommandPostORM(Base):
     updated_time: Mapped[datetime] = mapped_column(
         "UpdatedTime", DateTime(timezone=False), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True
     )
-

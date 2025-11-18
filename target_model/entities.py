@@ -10,7 +10,7 @@ class AirportRunway:
     runway_name: str = ""
     country: Optional[str] = None
     base: Optional[str] = None
-    runway_picture: Optional[str] = None
+    runway_picture: Optional[bytes] = None
 
     r_length: Optional[float] = None
     r_width: Optional[float] = None
@@ -56,7 +56,7 @@ class AircraftShelter:
     shelter_name: str = ""
     country: Optional[str] = None
     base: Optional[str] = None
-    shelter_picture: Optional[str] = None
+    shelter_picture: Optional[bytes] = None
 
     shelter_width: Optional[float] = None
     shelter_height: Optional[float] = None
@@ -106,7 +106,7 @@ class UndergroundCommandPost:
     ucc_name: str = ""
     country: Optional[str] = None
     base: Optional[str] = None
-    shelter_picture: Optional[str] = None
+    shelter_picture: Optional[bytes] = None
     location: Optional[str] = None
 
     rock_layer_materials: str = ""
