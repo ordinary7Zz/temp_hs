@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         self.ui.statusbar.addPermanentWidget(self.user_label, 1)
         self.setRoleAccess()  # 设置用户访问权限
 
-        sql = """SELECT UID, UserName FROM user_info WHERE UserName LIKE %s"""
+        sql = """SELECT UID, UserName FROM User_Info WHERE UserName LIKE %s"""
         db = DBHelper()
 
         user_res = db.execute_query(sql, (username,))
