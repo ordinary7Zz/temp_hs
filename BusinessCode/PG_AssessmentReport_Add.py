@@ -92,7 +92,6 @@ class AssessmentReportEditor(QDialog):
             self.current_user = get_user()
             self.ui.ed_creator_name.setText(self.current_user['UserName'])
 
-
     def _wire_signals(self):
         """绑定信号"""
         self.ui.btn_save.clicked.connect(self.on_save)
@@ -161,10 +160,14 @@ class AssessmentReportEditor(QDialog):
                         self.target_name = self.target.ucc_name
 
                     # 自动填充关联信息
-                    self.ui.ed_scene_name.setText(self.scene.DSName)
-                    self.ui.ed_parameter_id.setText(str(self.param.DPID))
-                    self.ui.ed_ammunition_name.setText(self.am.am_name)
-                    self.ui.ed_target_name.setText(self.target_name)
+                    if self.scene:
+                        self.ui.ed_scene_name.setText(self.scene.DSName)
+                    if self.param:
+                        self.ui.ed_parameter_id.setText(str(self.param.DPID))
+                    if self.am:
+                        self.ui.ed_ammunition_name.setText(self.am.am_name)
+                    if self.target:
+                        self.ui.ed_target_name.setText(self.target_name)
                     self.ui.ed_assessment_id.setText(str(damage_assessment_id))
 
                     # 设置目标类型

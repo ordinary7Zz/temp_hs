@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
-    <height>671</height>
+    <width>746</width>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,162 +20,435 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <widget class="QGroupBox" name="gb_layers">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>170</y>
-      <width>721</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>材料层与结构强度</string>
-    </property>
-    <layout class="QVBoxLayout" name="v_layers">
-     <item>
-      <widget class="QGroupBox" name="gb_soilrock">
-       <property name="title">
-        <string>土壤岩层</string>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="4" column="6">
+     <widget class="QPushButton" name="btn_clear">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>清 空</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>掩蔽库剖面结构模型</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>土壤岩层：花岗岩</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>防护层：硅酸盐水泥</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>衬彻层：钢筋混凝土</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>地下指挥中心：钢筋混凝土</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="5" colspan="5">
+     <widget class="QGroupBox" name="ShelterPicture">
+      <property name="title">
+       <string>地下指挥所照片</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>6</number>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="RockLayerMaterials">
-            <property name="text">
-             <string>土壤岩层材料：</string>
-            </property>
-           </widget>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="btn_choose_image">
+         <property name="text">
+          <string>选择图片</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lbl_image">
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="text">
+          <string>（预览区）</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="5">
+     <spacer name="spL">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="0" colspan="10">
+     <widget class="QGroupBox" name="gb_layers">
+      <property name="title">
+       <string>材料层与结构强度</string>
+      </property>
+      <layout class="QVBoxLayout" name="v_layers">
+       <item>
+        <widget class="QGroupBox" name="gb_soilrock">
+         <property name="title">
+          <string>土壤岩层</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="ProtectiveLayerMaterial">
+              <property name="text">
+               <string>防护层材料：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="ed_protect_mat"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item>
-           <widget class="QLineEdit" name="ed_soil_mat">
-            <property name="text">
-             <string>花岗岩</string>
-            </property>
-            <property name="placeholderText">
-             <string>如：花岗岩、片麻岩、硬砂岩</string>
-            </property>
-           </widget>
+          <item row="2" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="LiningLayerThick">
+              <property name="text">
+               <string>面层厚度：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_lining_thk">
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>500.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>60.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cm &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item>
-           <widget class="QLabel" name="label_22">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <item row="0" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="RockLayerThick">
+              <property name="text">
+               <string>面层厚度：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_soil_thk">
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>5000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cm &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="4">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLabel" name="RockLayerStrength">
+              <property name="text">
+               <string>抗压强度：≥</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_soil_fc">
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>500.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>50.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="4">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="LiningLayerStrength">
+              <property name="text">
+               <string>抗压强度：≥</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_lining_fc">
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>300.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>30.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_28">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="RockLayerMaterials">
+              <property name="text">
+               <string>土壤岩层材料：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="ed_soil_mat"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_22">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="ProtectiveLayerThick">
+              <property name="text">
+               <string>面层厚度：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_protect_thk">
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>200.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_25">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cm &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="4">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLabel" name="ProtectiveLayerStrength">
+              <property name="text">
+               <string>抗压强度：≥</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="sp_protect_fc">
+              <property name="decimals">
+               <number>1</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>500.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>50.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_27">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="LiningLayerMaterial">
+              <property name="text">
+               <string>衬砌层材料：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="ed_lining_mat"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_24">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
-        </item>
-        <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QLabel" name="RockLayerThick">
-            <property name="text">
-             <string>面层厚度：</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_soil_thk">
-            <property name="decimals">
-             <number>2</number>
-            </property>
-            <property name="minimum">
-             <double>0.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>5000.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>30.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="0" column="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QLabel" name="RockLayerStrength">
-            <property name="text">
-             <string>抗压强度：≥</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_soil_fc">
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="gb_hq">
+         <property name="title">
+          <string>地下指挥中心</string>
+         </property>
+         <layout class="QGridLayout" name="grid_hq">
+          <item row="1" column="2">
+           <widget class="QDoubleSpinBox" name="sp_hq_len">
             <property name="decimals">
              <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>0.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>500.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>100.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="ProtectiveLayerMaterial">
-            <property name="text">
-             <string>防护层材料：</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="ed_protect_mat">
-            <property name="text">
-             <string>钢筋混凝土</string>
-            </property>
-            <property name="placeholderText">
-             <string>如：钢筋混凝土</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_23">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QLabel" name="ProtectiveLayerThick">
-            <property name="text">
-             <string>面层厚度：</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_protect_thk">
-            <property name="decimals">
-             <number>2</number>
             </property>
             <property name="minimum">
              <double>0.000000000000000</double>
@@ -184,30 +457,39 @@
              <double>1000.000000000000000</double>
             </property>
             <property name="value">
-             <double>2.500000000000000</double>
+             <double>30.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_25">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <item row="0" column="10">
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
-         </layout>
-        </item>
-        <item row="1" column="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <widget class="QLabel" name="ProtectiveLayerStrength">
+          <item row="0" column="7">
+           <widget class="QLabel" name="UCCWallStrength">
             <property name="text">
              <string>抗压强度：≥</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_protect_fc">
+          <item row="1" column="1">
+           <widget class="QLabel" name="UCCLength">
+            <property name="text">
+             <string>空间尺寸：长</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QDoubleSpinBox" name="sp_hq_fc">
             <property name="decimals">
              <number>1</number>
             </property>
@@ -215,97 +497,108 @@
              <double>0.000000000000000</double>
             </property>
             <property name="maximum">
-             <double>500.000000000000000</double>
+             <double>200.000000000000000</double>
             </property>
             <property name="value">
-             <double>50.000000000000000</double>
+             <double>30.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_27">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="LiningLayerMaterial">
-            <property name="text">
-             <string>衬砌层材料：</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="ed_lining_mat">
-            <property name="text">
-             <string>钢筋混凝土</string>
-            </property>
-            <property name="placeholderText">
-             <string>如：钢筋混凝土</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_24">
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_17">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
-         </layout>
-        </item>
-        <item row="2" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QLabel" name="LiningLayerThick">
+          <item row="0" column="1">
+           <widget class="QLabel" name="UCCWallMaterials">
             <property name="text">
-             <string>面层厚度：</string>
+             <string>墙壁材料：</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_lining_thk">
+          <item row="1" column="5">
+           <widget class="QDoubleSpinBox" name="sp_hq_wid">
             <property name="decimals">
-             <number>2</number>
+             <number>1</number>
             </property>
             <property name="minimum">
              <double>0.000000000000000</double>
             </property>
             <property name="maximum">
-             <double>500.000000000000000</double>
+             <double>1000.000000000000000</double>
             </property>
             <property name="value">
-             <double>2.500000000000000</double>
+             <double>20.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_26">
+          <item row="1" column="4">
+           <widget class="QLabel" name="UCCWidth">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>（m）× 宽</string>
             </property>
            </widget>
           </item>
-         </layout>
-        </item>
-        <item row="2" column="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QLabel" name="LiningLayerStrength">
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_29">
             <property name="text">
-             <string>抗压强度：≥</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cm &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="sp_lining_fc">
+          <item row="0" column="9">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6">
+           <widget class="QLabel" name="UCCHeight">
+            <property name="text">
+             <string>（m）×高</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="8">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>（m）</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="ed_hq_wall"/>
+          </item>
+          <item row="1" column="7">
+           <widget class="QDoubleSpinBox" name="sp_hq_hei">
             <property name="decimals">
              <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>0.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>3.500000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="UCCWallThick">
+            <property name="text">
+             <string>墙壁厚度：</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QDoubleSpinBox" name="sp_hq_wall_thk">
+            <property name="decimals">
+             <number>0</number>
             </property>
             <property name="minimum">
              <double>0.000000000000000</double>
@@ -314,660 +607,187 @@
              <double>300.000000000000000</double>
             </property>
             <property name="value">
-             <double>50.000000000000000</double>
+             <double>60.000000000000000</double>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="label_28">
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="gb_hq">
-       <property name="title">
-        <string>地下指挥中心</string>
-       </property>
-       <widget class="QLabel" name="UCCHeight">
-        <property name="geometry">
-         <rect>
-          <x>292</x>
-          <y>55</y>
-          <width>57</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>（m）×高</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>430</x>
-          <y>55</y>
-          <width>36</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>（m）</string>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sp_hq_wall_thk">
-        <property name="geometry">
-         <rect>
-          <x>371</x>
-          <y>27</y>
-          <width>60</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="minimum">
-         <double>0.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>300.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>1.000000000000000</double>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sp_hq_wid">
-        <property name="geometry">
-         <rect>
-          <x>219</x>
-          <y>55</y>
-          <width>67</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="minimum">
-         <double>0.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1000.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>15.000000000000000</double>
-        </property>
-       </widget>
-       <widget class="QLabel" name="UCCLength">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>55</y>
-          <width>72</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>空间尺寸：长</string>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sp_hq_fc">
-        <property name="geometry">
-         <rect>
-          <x>582</x>
-          <y>27</y>
-          <width>60</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="minimum">
-         <double>0.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>200.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>50.000000000000000</double>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_17">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>27</y>
-          <width>16</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sp_hq_hei">
-        <property name="geometry">
-         <rect>
-          <x>355</x>
-          <y>55</y>
-          <width>60</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="minimum">
-         <double>0.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>100.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>3.500000000000000</double>
-        </property>
-       </widget>
-       <widget class="QDoubleSpinBox" name="sp_hq_len">
-        <property name="geometry">
-         <rect>
-          <x>88</x>
-          <y>55</y>
-          <width>67</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="decimals">
-         <number>2</number>
-        </property>
-        <property name="minimum">
-         <double>0.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1000.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>15.000000000000000</double>
-        </property>
-       </widget>
-       <widget class="QLabel" name="UCCWallMaterials">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>27</y>
-          <width>60</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>墙壁材料：</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="UCCWallThick">
-        <property name="geometry">
-         <rect>
-          <x>305</x>
-          <y>27</y>
-          <width>60</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>墙壁厚度：</string>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="ed_hq_wall">
-        <property name="geometry">
-         <rect>
-          <x>88</x>
-          <y>27</y>
-          <width>132</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>钢筋混凝土</string>
-        </property>
-        <property name="placeholderText">
-         <string>如：钢筋混凝土</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="UCCWidth">
-        <property name="geometry">
-         <rect>
-          <x>153</x>
-          <y>55</y>
-          <width>60</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>（m）× 宽</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="UCCWallStrength">
-        <property name="geometry">
-         <rect>
-          <x>507</x>
-          <y>27</y>
-          <width>69</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>抗压强度：≥</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_29">
-        <property name="geometry">
-         <rect>
-          <x>440</x>
-          <y>27</y>
-          <width>29</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;m &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_30">
-        <property name="geometry">
-         <rect>
-          <x>648</x>
-          <y>27</y>
-          <width>43</width>
-          <height>16</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MPa &lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QGroupBox" name="groupBox">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>420</y>
-      <width>721</width>
-      <height>201</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>掩蔽库剖面结构模型</string>
-    </property>
-    <widget class="QGroupBox" name="gb_photo_2">
-     <property name="geometry">
-      <rect>
-       <x>162</x>
-       <y>15</y>
-       <width>551</width>
-       <height>181</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string/>
-     </property>
-     <layout class="QVBoxLayout" name="v_photo_2">
-      <property name="spacing">
-       <number>6</number>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="9">
+     <widget class="QGroupBox" name="gb_photo_2">
+      <property name="title">
+       <string/>
       </property>
-      <property name="leftMargin">
-       <number>6</number>
+      <layout class="QVBoxLayout" name="v_photo_2">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lbl_image_2">
+         <property name="frameShape">
+          <enum>QFrame::Panel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="text">
+          <string>（预览区）</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="topMargin">
-       <number>6</number>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
       </property>
-      <property name="rightMargin">
-       <number>6</number>
+     </spacer>
+    </item>
+    <item row="0" column="0" colspan="5">
+     <widget class="QGroupBox" name="gb_basic">
+      <property name="title">
+       <string>基本信息</string>
       </property>
-      <property name="bottomMargin">
-       <number>6</number>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="UCCCode">
+         <property name="text">
+          <string>指挥所代码：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="ed_name"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="UCCName">
+         <property name="text">
+          <string>指挥所名称：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="ed_name_2"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="Country">
+         <property name="text">
+          <string>国家/地区：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="cmb_country"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="Base">
+         <property name="text">
+          <string>基地/部队：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="ed_unit"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="Location">
+         <property name="text">
+          <string>所在位置：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="ed_location"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="4" column="9">
+     <spacer name="spR">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <item>
-       <widget class="QLabel" name="lbl_image_2">
-        <property name="frameShape">
-         <enum>QFrame::Panel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
-        </property>
-        <property name="text">
-         <string>（预览区）</string>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>11</x>
-       <y>26</y>
-       <width>146</width>
-       <height>161</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>土壤岩层：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>防护层：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>衬彻层：</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>地下指挥中心：</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="ShelterPicture">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>10</y>
-      <width>231</width>
-      <height>151</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>地下指挥所照片</string>
-    </property>
-    <widget class="QPushButton" name="btn_choose_image">
-     <property name="geometry">
-      <rect>
-       <x>7</x>
-       <y>22</y>
-       <width>211</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>选择图片</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="lbl_image">
-     <property name="geometry">
-      <rect>
-       <x>7</x>
-       <y>52</y>
-       <width>211</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="text">
-      <string>（预览区）</string>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="gb_basic">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>11</y>
-      <width>481</width>
-      <height>151</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>基本信息</string>
-    </property>
-    <widget class="QLabel" name="label_18">
-     <property name="geometry">
-      <rect>
-       <x>525</x>
-       <y>28</y>
-       <width>16</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_21">
-     <property name="geometry">
-      <rect>
-       <x>525</x>
-       <y>57</y>
-       <width>16</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>11</x>
-       <y>20</y>
-       <width>232</width>
-       <height>101</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="UCCCode">
-        <property name="text">
-         <string>指挥所代码：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="ed_name"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_31">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="Country">
-        <property name="text">
-         <string>国家/地区：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="cmb_country"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="Location">
-        <property name="text">
-         <string>所在位置：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="ed_location">
-        <property name="text">
-         <string>未知</string>
-        </property>
-        <property name="placeholderText">
-         <string>未知</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>250</x>
-       <y>20</y>
-       <width>232</width>
-       <height>71</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QLabel" name="UCCName">
-        <property name="text">
-         <string>指挥所名称：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="ed_name_2"/>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_32">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;(*)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="Base">
-        <property name="text">
-         <string>基地/部队：</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="ed_unit">
-        <property name="text">
-         <string>未知</string>
-        </property>
-        <property name="placeholderText">
-         <string>未知</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>221</x>
-      <y>621</y>
-      <width>241</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="0">
-      <spacer name="spL">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btn_save_store">
-       <property name="text">
-        <string>保  存</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btn_clear">
-       <property name="text">
-        <string>清  空</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <spacer name="spR">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="btn_save_store">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>保存</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
- <tabstops>
-  <tabstop>ed_name</tabstop>
-  <tabstop>ed_name_2</tabstop>
-  <tabstop>cmb_country</tabstop>
-  <tabstop>ed_unit</tabstop>
-  <tabstop>ed_location</tabstop>
-  <tabstop>btn_choose_image</tabstop>
-  <tabstop>ed_soil_mat</tabstop>
-  <tabstop>sp_soil_thk</tabstop>
-  <tabstop>sp_soil_fc</tabstop>
-  <tabstop>ed_protect_mat</tabstop>
-  <tabstop>sp_protect_thk</tabstop>
-  <tabstop>sp_protect_fc</tabstop>
-  <tabstop>ed_lining_mat</tabstop>
-  <tabstop>sp_lining_thk</tabstop>
-  <tabstop>sp_lining_fc</tabstop>
-  <tabstop>ed_hq_wall</tabstop>
-  <tabstop>sp_hq_wall_thk</tabstop>
-  <tabstop>sp_hq_fc</tabstop>
-  <tabstop>sp_hq_len</tabstop>
-  <tabstop>sp_hq_wid</tabstop>
-  <tabstop>sp_hq_hei</tabstop>
-  <tabstop>btn_save_store</tabstop>
-  <tabstop>btn_clear</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

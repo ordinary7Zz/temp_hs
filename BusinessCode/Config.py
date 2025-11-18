@@ -1,13 +1,16 @@
 # config.py
 from __future__ import annotations
 import os
+import platform
+import shutil
 from pathlib import Path
 from configparser import ConfigParser, NoSectionError, NoOptionError
 from typing import Dict, Tuple, Optional
 
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QIntValidator
-from PyQt6.QtWidgets import QDialog, QWidget, QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QVBoxLayout, QMessageBox
+from PyQt6.QtWidgets import QDialog, QWidget, QLineEdit, QFormLayout, QPushButton, QHBoxLayout, QVBoxLayout, \
+    QMessageBox, QFileDialog, QGridLayout, QSizePolicy, QLabel, QGroupBox
 
 CONFIG_DIR = Path.home() / ".hs_2025"  # 或者当前目录Path(".")
 CONFIG_PATH = CONFIG_DIR / "config.ini"
@@ -24,6 +27,10 @@ _DEFAULTS = {
     "DB_USER": "root",
     "DB_PASS": "123456",
     "DB_NAME": "damassessment_db",
+    "mysqldump_path": "",
+    "mysql_path": "",
+    "auto_backup_path": "./auto_backups",
+    "manual_backup_path": "./manual_backups"
 }
 
 
@@ -127,9 +134,9 @@ def get_sqlalchemy_url(values: Dict[str, str]) -> str:
 from typing import Tuple, Dict, Optional
 
 
-def test_mysql_connection(values: Dict[str, str],
-                          check_db_exists: bool = True,
-                          try_use_db: bool = True) -> Tuple[bool, str]:
+def _test_mysql_connection(values: Dict[str, str],
+                           check_db_exists: bool = True,
+                           try_use_db: bool = True) -> Tuple[bool, str]:
     """
     测试到 MySQL 的连接，并（可选）检测 DB_NAME 是否存在。
     - check_db_exists=True 时，会查询 information_schema.SCHEMATA 判断库是否存在
@@ -190,14 +197,23 @@ def test_mysql_connection(values: Dict[str, str],
             pass
 
 
+def test_mysql_connection() -> Tuple[bool, str]:
+    values = load_config()
+    return _test_mysql_connection(values, True, True)
+
+
 class ConfigEditorDialog(QDialog):
+    """MySQL/备份配置编辑窗口（含自动识别可执行路径与备份目录）"""
     configSaved = pyqtSignal(dict)
+
+    # ------------------------ 公共接口 ------------------------
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.setWindowTitle("Mysql数据库配置")
-        self.setMinimumWidth(420)
+        self.setWindowTitle("MySQL 配置")
+        self.resize(640, 460)
 
+        # --- 基础字段 ---
         self.ed_host = QLineEdit()
         self.ed_port = QLineEdit()
         self.ed_user = QLineEdit()
@@ -207,69 +223,284 @@ class ConfigEditorDialog(QDialog):
         self.ed_port.setValidator(QIntValidator(1, 65535, self))
         self.ed_pass.setEchoMode(QLineEdit.EchoMode.Password)
 
-        form = QFormLayout()
-        form.addRow("主机名：", self.ed_host)
-        form.addRow("端口：", self.ed_port)
-        form.addRow("用户名：", self.ed_user)
-        form.addRow("密码：", self.ed_pass)
-        form.addRow("数据库名：", self.ed_name)
+        # --- 新增：工具路径&备份目录 ---
+        self.ed_mysql = QLineEdit()
+        self.ed_mysqldump = QLineEdit()
+        self.ed_auto_dir = QLineEdit()
+        self.ed_manual_dir = QLineEdit()
 
-        # 底部按钮
+        for _w in (self.ed_mysql, self.ed_mysqldump, self.ed_auto_dir, self.ed_manual_dir):
+            _w.setPlaceholderText("自动识别失败可手动选择")
+            _w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+
+        self.btn_browse_mysql = QPushButton("浏览…")
+        self.btn_browse_mysqldump = QPushButton("浏览…")
+        self.btn_browse_auto = QPushButton("选择…")
+        self.btn_browse_manual = QPushButton("选择…")
+        self.btn_autodetect = QPushButton("自动识别路径")
+
         self.btn_test = QPushButton("测试连接")
         self.btn_save = QPushButton("保存")
         self.btn_cancel = QPushButton("取消")
-        btns = QHBoxLayout()
-        btns.addWidget(self.btn_test)
-        btns.addStretch(1)
-        btns.addWidget(self.btn_save)
-        btns.addWidget(self.btn_cancel)
 
-        lay = QVBoxLayout(self)
-        lay.addLayout(form)
-        lay.addLayout(btns)
+        # --- 布局：三组分区 + 顶/底操作条 ---
+        gb_conn = QGroupBox("数据库连接", self)
+        grid_conn = QGridLayout(gb_conn)
+        self._add_form_row(grid_conn, 0, "主机名：", self.ed_host)
+        self._add_form_row(grid_conn, 1, "端口：", self.ed_port)
+        self._add_form_row(grid_conn, 2, "用户名：", self.ed_user)
+        self._add_form_row(grid_conn, 3, "密码：", self.ed_pass)
+        self._add_form_row(grid_conn, 4, "数据库名：", self.ed_name)
+        self._tune_grid(grid_conn)
 
+        gb_tools = QGroupBox("工具路径", self)
+        grid_tools = QGridLayout(gb_tools)
+        self._add_form_row(grid_tools, 0, "mysql 路径：",
+                           self._mk_row_with_browse(self.ed_mysql, self.btn_browse_mysql))
+        self._add_form_row(grid_tools, 1, "mysqldump 路径：",
+                           self._mk_row_with_browse(self.ed_mysqldump, self.btn_browse_mysqldump))
+        self._tune_grid(grid_tools)
+
+        gb_dirs = QGroupBox("备份目录", self)
+        grid_dirs = QGridLayout(gb_dirs)
+        self._add_form_row(grid_dirs, 0, "自动备份目录：",
+                           self._mk_row_with_browse(self.ed_auto_dir, self.btn_browse_auto))
+        self._add_form_row(grid_dirs, 1, "手动备份目录：",
+                           self._mk_row_with_browse(self.ed_manual_dir, self.btn_browse_manual))
+        self._tune_grid(grid_dirs)
+
+        bar_top = QHBoxLayout()
+        bar_top.setContentsMargins(0, 0, 0, 0)
+        bar_top.addWidget(self.btn_autodetect)
+        bar_top.addStretch(1)
+
+        bar_bottom = QHBoxLayout()
+        bar_bottom.setContentsMargins(0, 0, 0, 0)
+        bar_bottom.addWidget(self.btn_test)
+        bar_bottom.addStretch(1)
+        bar_bottom.addWidget(self.btn_save)
+        bar_bottom.addWidget(self.btn_cancel)
+
+        root = QVBoxLayout(self)
+        root.setContentsMargins(10, 10, 10, 10)
+        root.setSpacing(10)
+        root.addWidget(gb_conn)
+        root.addWidget(gb_tools)
+        root.addWidget(gb_dirs)
+        root.addLayout(bar_top)
+        root.addLayout(bar_bottom)
+
+        # --- 事件绑定 ---
+        self.btn_browse_mysql.clicked.connect(self._on_browse_mysql)
+        self.btn_browse_mysqldump.clicked.connect(self._on_browse_mysqldump)
+        self.btn_browse_auto.clicked.connect(self._on_browse_auto)
+        self.btn_browse_manual.clicked.connect(self._on_browse_manual)
+        self.btn_autodetect.clicked.connect(self._on_autodetect)
         self.btn_test.clicked.connect(self._on_test)
         self.btn_save.clicked.connect(self._on_save)
         self.btn_cancel.clicked.connect(self.reject)
 
-        # 载入现有配置
+        # 初始加载
         self._load_values()
 
+    # ------------------------ 交互逻辑 ------------------------
+
+    def _on_browse_mysql(self):
+        filt = "Executable (*.exe *.bat *.cmd);;All Files (*)" if self._is_windows() else "All Files (*)"
+        path, _ = QFileDialog.getOpenFileName(self, "选择 mysql 可执行文件", "", filt)
+        if path:
+            self.ed_mysql.setText(path)
+
+    def _on_browse_mysqldump(self):
+        filt = "Executable (*.exe *.bat *.cmd);;All Files (*)" if self._is_windows() else "All Files (*)"
+        path, _ = QFileDialog.getOpenFileName(self, "选择 mysqldump 可执行文件", "", filt)
+        if path:
+            self.ed_mysqldump.setText(path)
+
+    def _on_browse_auto(self):
+        base = self.ed_auto_dir.text() or self._default_auto_dir()
+        path = QFileDialog.getExistingDirectory(self, "选择自动备份目录", base)
+        if path:
+            self.ed_auto_dir.setText(path)
+
+    def _on_browse_manual(self):
+        base = self.ed_manual_dir.text() or self._default_manual_dir()
+        path = QFileDialog.getExistingDirectory(self, "选择手动备份目录", base)
+        if path:
+            self.ed_manual_dir.setText(path)
+
+    def _on_autodetect(self):
+        mysql_p = self._detect_mysql_path()
+        mysqldump_p = self._detect_mysqldump_path()
+        if mysql_p:
+            self.ed_mysql.setText(mysql_p)
+        if mysqldump_p:
+            self.ed_mysqldump.setText(mysqldump_p)
+
+        auto_dir, manual_dir = self._detect_backup_dirs()
+        if not self.ed_auto_dir.text().strip():
+            self.ed_auto_dir.setText(auto_dir)
+        if not self.ed_manual_dir.text().strip():
+            self.ed_manual_dir.setText(manual_dir)
+
+        msg = []
+        if not mysql_p: msg.append("未找到 mysql")
+        if not mysqldump_p: msg.append("未找到 mysqldump")
+        if msg:
+            QMessageBox.information(self, "自动识别", "；".join(msg) + "，可手动选择。")
+        else:
+            QMessageBox.information(self, "自动识别", "已完成自动识别，可确认或手动调整。")
+
+    def _on_test(self):
+        values = self._collect()
+        ok, msg = _test_mysql_connection(values)  # 依赖现有实现
+        QMessageBox.information(self, "测试连接", msg) if ok else QMessageBox.warning(self, "测试连接", msg)
+
+    def _on_save(self):
+        values = self._collect()
+        ok, err = validate_config(values)  # 依赖现有实现
+        if not ok:
+            QMessageBox.warning(self, "校验失败", err or "配置不合法")
+            return
+
+        # 轻量存在性校验（不强制）
+        warns = []
+        if values["mysql_path"] and not Path(values["mysql_path"]).exists():
+            warns.append("mysql_path 不存在")
+        if values["mysqldump_path"] and not Path(values["mysqldump_path"]).exists():
+            warns.append("mysqldump_path 不存在")
+        for k in ("auto_backup_path", "manual_backup_path"):
+            p = values[k]
+            if p:
+                try:
+                    Path(p).mkdir(parents=True, exist_ok=True)
+                except Exception:
+                    warns.append(f"{k} 无法创建")
+
+        if warns:
+            QMessageBox.warning(self, "提示", "路径校验提醒：\n- " + "\n- ".join(warns))
+
+        try:
+            save_config(values)  # 依赖现有实现
+            self.configSaved.emit(values)
+            QMessageBox.information(self, "保存成功", f"配置已保存到 {CONFIG_PATH}")
+            self.accept()
+        except Exception as e:
+            QMessageBox.critical(self, "保存失败", str(e))
+
+    # ------------------------ 数据装载 ------------------------
+
     def _load_values(self):
-        cfg = load_config()
+        cfg = load_config()  # 依赖现有实现
         self.ed_host.setText(cfg.get("DB_HOST", ""))
         self.ed_port.setText(cfg.get("DB_PORT", "3306"))
         self.ed_user.setText(cfg.get("DB_USER", ""))
         self.ed_pass.setText(cfg.get("DB_PASS", ""))
         self.ed_name.setText(cfg.get("DB_NAME", ""))
 
+        mysql_p = cfg.get("mysql_path", "") or self._detect_mysql_path()
+        mysqldump_p = cfg.get("mysqldump_path", "") or self._detect_mysqldump_path()
+        auto_dir = cfg.get("auto_backup_path", "") or self._default_auto_dir()
+        manual_dir = cfg.get("manual_backup_path", "") or self._default_manual_dir()
+
+        self.ed_mysql.setText(mysql_p)
+        self.ed_mysqldump.setText(mysqldump_p)
+        self.ed_auto_dir.setText(auto_dir)
+        self.ed_manual_dir.setText(manual_dir)
+
     def _collect(self) -> Dict[str, str]:
         return {
             "DB_HOST": self.ed_host.text().strip(),
             "DB_PORT": self.ed_port.text().strip(),
             "DB_USER": self.ed_user.text().strip(),
-            "DB_PASS": self.ed_pass.text(),  # 密码允许空与空格
+            "DB_PASS": self.ed_pass.text(),  # 允许空格
             "DB_NAME": self.ed_name.text().strip(),
+            "mysql_path": self.ed_mysql.text().strip(),
+            "mysqldump_path": self.ed_mysqldump.text().strip(),
+            "auto_backup_path": self.ed_auto_dir.text().strip(),
+            "manual_backup_path": self.ed_manual_dir.text().strip(),
         }
 
-    def _on_test(self):
-        values = self._collect()
-        ok, msg = test_mysql_connection(values)
-        if ok:
-            QMessageBox.information(self, "测试连接", msg)
-        else:
-            QMessageBox.warning(self, "测试连接", msg)
+    # ------------------------ 帮助函数 ------------------------
 
-    def _on_save(self):
-        values = self._collect()
-        ok, err = validate_config(values)
-        if not ok:
-            QMessageBox.warning(self, "校验失败", err or "配置不合法")
-            return
-        try:
-            save_config(values)
-            self.configSaved.emit(values)
-            QMessageBox.information(self, "保存成功", f"配置已保存到{CONFIG_PATH}")
-            self.accept()
-        except Exception as e:
-            QMessageBox.critical(self, "保存失败", str(e))
+    @staticmethod
+    def _is_windows() -> bool:
+        return platform.system().lower().startswith("win")
+
+    @staticmethod
+    def _label(text: str) -> QLabel:
+        from PyQt6.QtCore import Qt
+        lab = QLabel(text)
+        lab.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        lab.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        return lab
+
+    def _add_form_row(self, grid: QGridLayout, row: int, label_text: str, field_widget: QWidget):
+        grid.addWidget(self._label(label_text), row, 0)
+        grid.addWidget(field_widget, row, 1)
+
+    @staticmethod
+    def _mk_row_with_browse(editor: QLineEdit, browse_btn: QPushButton) -> QWidget:
+        roww = QWidget()
+        h = QHBoxLayout(roww)
+        h.setContentsMargins(0, 0, 0, 0)
+        h.setSpacing(8)
+        h.addWidget(editor, 1)
+        h.addWidget(browse_btn, 0)
+        return roww
+
+    @staticmethod
+    def _tune_grid(grid: QGridLayout):
+        grid.setHorizontalSpacing(10)
+        grid.setVerticalSpacing(8)
+        grid.setContentsMargins(12, 12, 12, 12)
+        grid.setColumnStretch(0, 3)
+        grid.setColumnStretch(1, 7)
+
+    @staticmethod
+    def _default_auto_dir() -> str:
+        return _DEFAULTS["auto_backup_path"]
+
+    @staticmethod
+    def _default_manual_dir() -> str:
+        return _DEFAULTS["manual_backup_path"]
+
+    @classmethod
+    def _detect_backup_dirs(cls) -> tuple[str, str]:
+        return cls._default_auto_dir(), cls._default_manual_dir()
+
+    @classmethod
+    def _detect_mysql_path(cls) -> str:
+        cand = shutil.which("mysql")
+        if cand:
+            return cand
+        if cls._is_windows():
+            roots = [
+                Path(os.environ.get("ProgramFiles", r"C:\Program Files")),
+                Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")),
+            ]
+            for root in roots:
+                for base in (root / "MySQL", root / "MariaDB"):
+                    if not base.exists():
+                        continue
+                    for p in base.rglob("mysql.exe"):
+                        return str(p)
+        return ""
+
+    @classmethod
+    def _detect_mysqldump_path(cls) -> str:
+        cand = shutil.which("mysqldump")
+        if cand:
+            return cand
+        if cls._is_windows():
+            roots = [
+                Path(os.environ.get("ProgramFiles", r"C:\Program Files")),
+                Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")),
+            ]
+            for root in roots:
+                for base in (root / "MySQL", root / "MariaDB"):
+                    if not base.exists():
+                        continue
+                    for p in base.rglob("mysqldump.exe"):
+                        return str(p)
+        return ""

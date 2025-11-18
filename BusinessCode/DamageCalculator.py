@@ -2,6 +2,7 @@
 毁伤结果计算模块
 根据场景ID、参数ID、弹药ID和目标ID计算毁伤效果
 """
+from __future__ import annotations
 from loguru import logger
 from DBCode.DBHelper import DBHelper
 from damage_models.sql_repository_dbhelper import (
@@ -13,6 +14,9 @@ from target_model.sql_repository import SQLRepository as TargetModelRepository
 from am_models.db import session_scope as AmSessionScope
 from target_model.db import session_scope as TargetSessionScope
 from target_model.entities import AirportRunway, AircraftShelter, UndergroundCommandPost
+
+
+from loguru import logger
 
 class DamageCalculator:
     """毁伤结果计算器"""
@@ -32,7 +36,7 @@ class DamageCalculator:
         # 弹坑宽度:
         self.craterWidth = 0.5
         # 结构破坏程度
-        self.discturction = 0.2
+        self.discturction = 1
         # 毁伤程度
         self.damage_degree = '轻度毁伤'
 
@@ -79,7 +83,7 @@ class DamageCalculator:
             # TODO: 实现真实的计算逻辑
             # 目前返回固定值用于测试
             # result = self._calculate_fixed_result()
-            if parameter_info and "爆破" in parameter_info.WarheadType:
+            if parameter_info and ("爆破" in parameter_info.WarheadType or "破片"in parameter_info.WarheadType):
                 self.calculate_explosive_warhead(scene_info, parameter_info, target_type, target_info, ammunition_info)
 
             logger.info(f"毁伤结果计算完成")
@@ -222,7 +226,7 @@ class DamageCalculator:
         # 炸药爆热
         heatExpl = 5000.0
         if ammunition.exb_explosion:
-            heatExpl = ammunition.exb_explosion
+            heatExpl = float(ammunition.exb_explosion)
 
         # TNT炸药爆热
         heatTNT = 4187.0
@@ -245,40 +249,61 @@ class DamageCalculator:
         throwCoeffSoil = 0.0
         if target_type == 1:
             throwCoeffSoil = 1.7
+            if chargeMass >= 25:
+                chargeMass = max(2.0, chargeMass / 25.0)
         elif target_type == 2:
             throwCoeffSoil = 1
+            if chargeMass >= 25:
+                chargeMass = max(10.0, chargeMass / 5.0)
         elif target_type == 3:
             throwCoeffSoil = 0.75
-        #弹坑深度:
-        self.craterDepth = ((chargeMass * heatExpl / (distCG2HoleBot * heatTNT))**(1/3) + distCG2HoleBot) / 3.0
-        # 弹坑面积:
-        self.craterArea = 3.14*(self.craterDepth/2)**2
-        # 弹坑直径:
-        self.craterDiameter = 6.5 * self.craterDepth
-        # 弹坑容积:
-        self.craterVolume = 2/3 * 3.14 * (self.craterDiameter/2)**3 / 4.0
-        # 弹坑长度:
-        self.craterLength = 1.1 * self.craterDiameter
-        # 弹坑宽度:
-        self.craterWidth = 0.9 * self.craterDiameter
+            if chargeMass >= 25:
+                chargeMass = max(10.0, chargeMass / 5.0)
 
-        if self.craterDepth >= 1.5:
-            self.discturction = 0.2 + self.craterDepth - 1.5
+        if target_type == 1:
+            # 弹坑深度:
+            self.craterDepth = ((chargeMass * heatExpl / (distCG2HoleBot * heatTNT))**(1/3) + distCG2HoleBot) / 3.0
+            # 弹坑直径:
+            self.craterDiameter = 5.0 * self.craterDepth
+            # 弹坑面积:
+            self.craterArea = 0.5 * 3.14 * (self.craterDiameter / 2) ** 2
+            # 弹坑容积:
+            self.craterVolume = 2 / 3 * 3.14 * (self.craterDiameter / 2) ** 3 / 8.0
+            # 弹坑长度:
+            self.craterLength = 1.05 * self.craterDiameter
+            # 弹坑宽度:
+            self.craterWidth = 0.95 * self.craterDiameter
+            # 结构破坏程度:
+            if self.craterDepth >= 1.3:
+                self.discturction = round(1 + 4 * (self.craterDepth - 1.3), 2)
+        else:
+            # 弹坑深度:
+            self.craterDepth = ((chargeMass * heatExpl / (distCG2HoleBot * heatTNT))**(1/3) + distCG2HoleBot) / 1.5
+            # 弹坑直径:
+            self.craterDiameter = 1.8 * self.craterDepth
+            # 弹坑面积:
+            self.craterArea = 0.5 * 3.14 * (self.craterDiameter / 2) ** 2
+            # 弹坑容积:
+            self.craterVolume = 2 / 3 * 3.14 * (self.craterDiameter / 2) ** 3 / 8.0
+            # 弹坑长度:
+            self.craterLength = 1.05 * self.craterDiameter
+            # 弹坑宽度:
+            self.craterWidth = 0.95 * self.craterDiameter
+            # 结构破坏程度:
+            if self.craterDepth >= 1.3:
+                self.discturction = round(1 + 4 * (self.craterDepth - 1.3), 2)
 
         damage_degree_values = ["未达到轻度毁伤", "轻度毁伤", "中度毁伤", "重度毁伤", "完全摧毁"]
-        if self.discturction <= 0.1:
+        if self.discturction <= 1:
             self.damage_degree = damage_degree_values[0]
-        elif self.discturction <= 0.4:
+        elif self.discturction <= 8:
             self.damage_degree = damage_degree_values[1]
-        elif self.discturction <= 0.7:
+        elif self.discturction <= 15:
             self.damage_degree = damage_degree_values[2]
-        elif self.discturction <= 0.85:
+        elif self.discturction <= 20:
             self.damage_degree = damage_degree_values[3]
         else:
             self.damage_degree = damage_degree_values[4]
-
-
-
 
 # 便捷函数
 def calculate_damage(scene_id: int, parameter_id: int, ammunition_id: int,

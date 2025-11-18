@@ -26,6 +26,7 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QCheckBox,
     QLabel,
+    QSizePolicy,
 )
 
 from BusinessCode.ImgHelper import ImgHelper
@@ -36,38 +37,52 @@ from target_model.entities import UndergroundCommandPost
 from target_model.sql_repository import SQLRepository
 
 
-class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
+class Target_UCC_AddWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setupUi(self)
-        self.setFixedSize(740, 660)
+
+        # ---- 组合式 UI ----
+        self.ui = Ui_Frm_Target_UCC_Add()
+        self.ui.setupUi(self)
         self._ensure_initial_size()
 
         self._entity_id: int | None = None
         self._image_bytes: bytes | None = None
         self._image_source_path: str | None = None
         self._draft_file = Path.home() / ".underground_editor_draft.json"
+        self._photo_label = getattr(self.ui, "lbl_image", None)
+        self._lock_preview_label_size(self._photo_label, 420, 260)
+        self._photo_placeholder = ""
+        self._pending_photo: QPixmap | None = None
+        if self._photo_label is not None:
+            self._photo_placeholder = self._photo_label.text()
+            try:
+                self._photo_label.setScaledContents(False)
+            except Exception:
+                pass
+            self._photo_label.installEventFilter(self)
 
         # 新建模式默认标题
         self.setWindowTitle("添加地下指挥所模型")
-        if hasattr(self, "cmb_country") and hasattr(self.cmb_country, "clear"):
-            self.cmb_country.clear()
-        if hasattr(self, "cmb_country"):
-            self.cmb_country.addItems(["中国", "美国", "俄罗斯", "法国", "英国", "德国", "其他"])
+        if hasattr(self.ui, "cmb_country") and hasattr(self.ui.cmb_country, "clear"):
+            self.ui.cmb_country.clear()
+        if hasattr(self.ui, "cmb_country"):
+            self.ui.cmb_country.addItems(["中国", "美国", "俄罗斯", "法国", "英国", "德国", "其他"])
 
         # 连接信号
-        self.btn_choose_image.clicked.connect(self.on_choose_image)
-        self.btn_clear.clicked.connect(self.on_clear)
-        self.btn_save_store.clicked.connect(self.on_save_store)
+        self.ui.btn_choose_image.clicked.connect(self.on_choose_image)
+        self.ui.btn_clear.clicked.connect(self.on_clear)
+        self.ui.btn_save_store.clicked.connect(self.on_save_store)
 
         # 显示下方“剖面结构模型”区域（若存在）
         try:
-            if hasattr(self, "groupBox"):
-                self.groupBox.setVisible(True)
+            if hasattr(self.ui, "groupBox"):
+                self.ui.groupBox.setVisible(True)
         except Exception:
             pass
 
-        self._structure_preview_label = getattr(self, "lbl_image_2", None)
+        self._structure_preview_label = getattr(self.ui, "lbl_image_2", None)
+        self._lock_preview_label_size(self._structure_preview_label, 360, 200)
         self._structure_placeholder = (
             self._structure_preview_label.text() if self._structure_preview_label is not None else ""
         )
@@ -95,43 +110,45 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
     def load_entity(self, entity: "UndergroundCommandPost") -> None:
         self.setWindowTitle("编辑地下指挥所数据模型")
         self._entity_id = entity.id
-        self._image_bytes = entity.shelter_picture or None
-        self._image_source_path = None
-        if self._image_bytes:
+        if isinstance(entity.shelter_picture, (bytes, bytearray)):
+            self._image_bytes = bytes(entity.shelter_picture)
+        elif isinstance(entity.shelter_picture, str) and entity.shelter_picture:
             try:
-                ImgHelper.from_bytes(self._image_bytes).set_on_label(
-                    self.lbl_image, scaled=True, keep_aspect=True, smooth=True
-                )
+                self._image_bytes = Path(entity.shelter_picture).read_bytes()
+                self._image_source_path = entity.shelter_picture
             except Exception:
-                self.lbl_image.clear()
+                self._image_bytes = None
         else:
-            self.lbl_image.clear()
+            self._image_bytes = None
+        self._image_source_path = None
+        self._pending_photo = None
+        self._update_main_image_label()
 
-        self.ed_name.setText((entity.ucc_code or "").strip())
-        self.ed_name_2.setText((entity.ucc_name or "").strip())
+        self.ui.ed_name.setText((entity.ucc_code or "").strip())
+        self.ui.ed_name_2.setText((entity.ucc_name or "").strip())
         self._set_combo_text("cmb_country", entity.country)
-        self.ed_unit.setText((entity.base or "").strip())
-        self.ed_location.setText((entity.location or "").strip())
+        self.ui.ed_unit.setText((entity.base or "").strip())
+        self.ui.ed_location.setText((entity.location or "").strip())
 
-        self.ed_soil_mat.setText((entity.rock_layer_materials or "").strip())
-        self.sp_soil_thk.setValue(float(entity.rock_layer_thick or 0.0))
-        self.sp_soil_fc.setValue(float(entity.rock_layer_strength or 0.0))
+        self.ui.ed_soil_mat.setText((entity.rock_layer_materials or "").strip())
+        self.ui.sp_soil_thk.setValue(float(entity.rock_layer_thick or 0.0))
+        self.ui.sp_soil_fc.setValue(float(entity.rock_layer_strength or 0.0))
 
-        self.ed_protect_mat.setText((entity.protective_layer_material or "").strip())
-        self.sp_protect_thk.setValue(float(entity.protective_layer_thick or 0.0))
-        self.sp_protect_fc.setValue(float(entity.protective_layer_strength or 0.0))
+        self.ui.ed_protect_mat.setText((entity.protective_layer_material or "").strip())
+        self.ui.sp_protect_thk.setValue(float(entity.protective_layer_thick or 0.0))
+        self.ui.sp_protect_fc.setValue(float(entity.protective_layer_strength or 0.0))
 
-        self.ed_lining_mat.setText((entity.lining_layer_material or "").strip())
-        self.sp_lining_thk.setValue(float(entity.lining_layer_thick or 0.0))
-        self.sp_lining_fc.setValue(float(entity.lining_layer_strength or 0.0))
+        self.ui.ed_lining_mat.setText((entity.lining_layer_material or "").strip())
+        self.ui.sp_lining_thk.setValue(float(entity.lining_layer_thick or 0.0))
+        self.ui.sp_lining_fc.setValue(float(entity.lining_layer_strength or 0.0))
 
-        self.ed_hq_wall.setText((entity.ucc_wall_materials or "").strip())
-        self.sp_hq_wall_thk.setValue(float(entity.ucc_wall_thick or 0.0))
-        self.sp_hq_fc.setValue(float(entity.ucc_wall_strength or 0.0))
+        self.ui.ed_hq_wall.setText((entity.ucc_wall_materials or "").strip())
+        self.ui.sp_hq_wall_thk.setValue(float(entity.ucc_wall_thick or 0.0))
+        self.ui.sp_hq_fc.setValue(float(entity.ucc_wall_strength or 0.0))
 
-        self.sp_hq_len.setValue(float(entity.ucc_length or 0.0))
-        self.sp_hq_wid.setValue(float(entity.ucc_width or 0.0))
-        self.sp_hq_hei.setValue(float(entity.ucc_height or 0.0))
+        self.ui.sp_hq_len.setValue(float(entity.ucc_length or 0.0))
+        self.ui.sp_hq_wid.setValue(float(entity.ucc_width or 0.0))
+        self.ui.sp_hq_hei.setValue(float(entity.ucc_height or 0.0))
         self._ucc_demo_applied = True
         self._update_ucc_preview()
 
@@ -142,16 +159,19 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         )
         if not filename:
             return
-        pixmap = QPixmap(filename)
-        if pixmap.isNull():
+        try:
+            data = Path(filename).read_bytes()
+        except Exception as exc:
+            QMessageBox.warning(self, "错误", f"读取图片失败：{exc}")
+            return
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(data):
             QMessageBox.warning(self, "错误", "无法加载图片")
             return
-        helper = ImgHelper.from_pixmap(pixmap)
-        helper.resize(long_side=1280, keep_aspect=True)
-        helper.compress_to_limit(200 * 1024, fmt="JPEG")
-        self._image_bytes = helper.to_bytes(fmt="JPEG", quality=85)
+        self._image_bytes = data
         self._image_source_path = filename
-        helper.set_on_label(self.lbl_image, scaled=True, keep_aspect=True, smooth=True)
+        self._pending_photo = pixmap
+        self._update_main_image_label()
 
     # ------------------------------------------------------------------ save / clear
     def on_save_store(self) -> None:
@@ -166,6 +186,8 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         try:
             with session_scope() as session:
                 repo = SQLRepository(session)
+                if not self._ensure_unique_ucc(repo, entity):
+                    return
                 if self._entity_id is None:
                     repo.add(entity)
                 else:
@@ -199,7 +221,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
                 valid = False
             if valid:
                 continue
-            label_widget = getattr(self, label_name, None)
+            label_widget = getattr(self.ui, label_name, None)
             label_text = getattr(label_widget, "text", lambda: label_name)()
             missing.append((self._normalize_label(label_text), widget))
 
@@ -219,24 +241,24 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
 
     def _required_field_specs(self) -> list[tuple[str, object, Callable[[], bool]]]:
         return [
-            ("UCCCode", getattr(self, "ed_name", None), lambda: bool(self.ed_name.text().strip())),
-            ("UCCName", getattr(self, "ed_name_2", None), lambda: bool(self.ed_name_2.text().strip())),
-            ("RockLayerMaterials", getattr(self, "ed_soil_mat", None),
-             lambda: bool(self.ed_soil_mat.text().strip())),
-            ("RockLayerThick", getattr(self, "sp_soil_thk", None), lambda: self.sp_soil_thk.value() > 0),
-            ("ProtectiveLayerMaterial", getattr(self, "ed_protect_mat", None),
-             lambda: bool(self.ed_protect_mat.text().strip())),
-            ("ProtectiveLayerThick", getattr(self, "sp_protect_thk", None),
-             lambda: self.sp_protect_thk.value() > 0),
-            ("ProtectiveLayerStrength", getattr(self, "sp_protect_fc", None),
-             lambda: self.sp_protect_fc.value() > 0),
-            ("LiningLayerMaterial", getattr(self, "ed_lining_mat", None),
-             lambda: bool(self.ed_lining_mat.text().strip())),
-            ("LiningLayerThick", getattr(self, "sp_lining_thk", None), lambda: self.sp_lining_thk.value() > 0),
-            ("LiningLayerStrength", getattr(self, "sp_lining_fc", None), lambda: self.sp_lining_fc.value() > 0),
-            ("UCCWallMaterials", getattr(self, "ed_hq_wall", None), lambda: bool(self.ed_hq_wall.text().strip())),
-            ("UCCWallThick", getattr(self, "sp_hq_wall_thk", None), lambda: self.sp_hq_wall_thk.value() > 0),
-            ("UCCWallStrength", getattr(self, "sp_hq_fc", None), lambda: self.sp_hq_fc.value() > 0),
+            ("UCCCode", getattr(self.ui, "ed_name", None), lambda: bool(self.ui.ed_name.text().strip())),
+            ("UCCName", getattr(self.ui, "ed_name_2", None), lambda: bool(self.ui.ed_name_2.text().strip())),
+            ("RockLayerMaterials", getattr(self.ui, "ed_soil_mat", None),
+             lambda: bool(self.ui.ed_soil_mat.text().strip())),
+            ("RockLayerThick", getattr(self.ui, "sp_soil_thk", None), lambda: self.ui.sp_soil_thk.value() > 0),
+            ("ProtectiveLayerMaterial", getattr(self.ui, "ed_protect_mat", None),
+             lambda: bool(self.ui.ed_protect_mat.text().strip())),
+            ("ProtectiveLayerThick", getattr(self.ui, "sp_protect_thk", None),
+             lambda: self.ui.sp_protect_thk.value() > 0),
+            ("ProtectiveLayerStrength", getattr(self.ui, "sp_protect_fc", None),
+             lambda: self.ui.sp_protect_fc.value() > 0),
+            ("LiningLayerMaterial", getattr(self.ui, "ed_lining_mat", None),
+             lambda: bool(self.ui.ed_lining_mat.text().strip())),
+            ("LiningLayerThick", getattr(self.ui, "sp_lining_thk", None), lambda: self.ui.sp_lining_thk.value() > 0),
+            ("LiningLayerStrength", getattr(self.ui, "sp_lining_fc", None), lambda: self.ui.sp_lining_fc.value() > 0),
+            ("UCCWallMaterials", getattr(self.ui, "ed_hq_wall", None), lambda: bool(self.ui.ed_hq_wall.text().strip())),
+            ("UCCWallThick", getattr(self.ui, "sp_hq_wall_thk", None), lambda: self.ui.sp_hq_wall_thk.value() > 0),
+            ("UCCWallStrength", getattr(self.ui, "sp_hq_fc", None), lambda: self.ui.sp_hq_fc.value() > 0),
         ]
 
     @staticmethod
@@ -256,7 +278,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         return cleaned or stripped.strip()
 
     def _combo_text(self, attr_name: str, fallback: str = "") -> str:
-        combo = getattr(self, attr_name, None)
+        combo = getattr(self.ui, attr_name, None)
         if combo is None or not hasattr(combo, "currentText"):
             return fallback
         text = combo.currentText()
@@ -267,15 +289,15 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
     def _ensure_initial_size(self) -> None:
         """确保窗口与预览控件有基础尺寸，避免初始显示过小或布局异常。"""
         try:
-            if hasattr(self, "lbl_image") and hasattr(self.lbl_image, "setMinimumSize"):
-                self.lbl_image.setMinimumSize(QSize(240, 180))
+            if hasattr(self.ui, "lbl_image") and hasattr(self.ui.lbl_image, "setMinimumSize"):
+                self.ui.lbl_image.setMinimumSize(QSize(240, 180))
         except Exception:
             # 安全兜底，不影响窗口创建
             pass
 
     def _set_combo_text(self, attr_name: str, value: str | None) -> None:
         """将指定下拉框设置为给定文本（若文本不存在则保持不变）。"""
-        combo = getattr(self, attr_name, None)
+        combo = getattr(self.ui, attr_name, None)
         if combo is None or not hasattr(combo, "findText"):
             return
         text = (value or "").strip()
@@ -289,8 +311,8 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             pass
 
     def _build_entity_from_form(self) -> "UndergroundCommandPost":
-        raw_code = (self.ed_name.text() or "").strip()
-        name = (self.ed_name_2.text() or "").strip()
+        raw_code = (self.ui.ed_name.text() or "").strip()
+        name = (self.ui.ed_name_2.text() or "").strip()
         if not name:
             raise ValueError("请填写指挥所名称")
 
@@ -300,9 +322,9 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             slug = re.sub(r"[^0-9A-Za-z]+", "-", name).strip("-").upper()
             normalized_code = f"UCC-{slug or '000001'}"
 
-        country = (self.cmb_country.currentText() or "").strip()
-        base_name = (self.ed_unit.text() or "").strip()
-        location = (self.ed_location.text() or "").strip()
+        country = (self.ui.cmb_country.currentText() or "").strip()
+        base_name = (self.ui.ed_unit.text() or "").strip()
+        location = (self.ui.ed_location.text() or "").strip()
 
         def _text(value: str | None) -> str | None:
             value = (value or "").strip()
@@ -318,21 +340,21 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             base=_text(base_name),
             shelter_picture=self._image_bytes,
             location=_text(location),
-            rock_layer_materials=self.ed_soil_mat.text().strip(),
-            rock_layer_thick=float(self.sp_soil_thk.value()),
-            rock_layer_strength=_float_or_none(self.sp_soil_fc.value()),
-            protective_layer_material=self.ed_protect_mat.text().strip(),
-            protective_layer_thick=float(self.sp_protect_thk.value()),
-            protective_layer_strength=float(self.sp_protect_fc.value()),
-            lining_layer_material=self.ed_lining_mat.text().strip(),
-            lining_layer_thick=float(self.sp_lining_thk.value()),
-            lining_layer_strength=float(self.sp_lining_fc.value()),
-            ucc_wall_materials=self.ed_hq_wall.text().strip(),
-            ucc_wall_thick=float(self.sp_hq_wall_thk.value()),
-            ucc_wall_strength=float(self.sp_hq_fc.value()),
-            ucc_length=_float_or_none(self.sp_hq_len.value()),
-            ucc_width=_float_or_none(self.sp_hq_wid.value()),
-            ucc_height=_float_or_none(self.sp_hq_hei.value()),
+            rock_layer_materials=self.ui.ed_soil_mat.text().strip(),
+            rock_layer_thick=float(self.ui.sp_soil_thk.value()),
+            rock_layer_strength=_float_or_none(self.ui.sp_soil_fc.value()),
+            protective_layer_material=self.ui.ed_protect_mat.text().strip(),
+            protective_layer_thick=float(self.ui.sp_protect_thk.value()),
+            protective_layer_strength=float(self.ui.sp_protect_fc.value()),
+            lining_layer_material=self.ui.ed_lining_mat.text().strip(),
+            lining_layer_thick=float(self.ui.sp_lining_thk.value()),
+            lining_layer_strength=float(self.ui.sp_lining_fc.value()),
+            ucc_wall_materials=self.ui.ed_hq_wall.text().strip(),
+            ucc_wall_thick=float(self.ui.sp_hq_wall_thk.value()),
+            ucc_wall_strength=float(self.ui.sp_hq_fc.value()),
+            ucc_length=_float_or_none(self.ui.sp_hq_len.value()),
+            ucc_width=_float_or_none(self.ui.sp_hq_wid.value()),
+            ucc_height=_float_or_none(self.ui.sp_hq_hei.value()),
             ucc_status=None,
         )
         if self._entity_id is not None:
@@ -392,23 +414,15 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         self._entity_id = int(entity_id) if isinstance(entity_id, int) else None
 
         blob = state.get("image_blob")
+        self._image_bytes = None
         if isinstance(blob, str) and blob:
             try:
                 self._image_bytes = base64.b64decode(blob)
             except Exception:
                 self._image_bytes = None
-        else:
-            self._image_bytes = None
         self._image_source_path = None
-        if self._image_bytes:
-            try:
-                ImgHelper.from_bytes(self._image_bytes).set_on_label(
-                    self.lbl_image, scaled=True, keep_aspect=True, smooth=True
-                )
-            except Exception:
-                self.lbl_image.clear()
-        else:
-            self.lbl_image.clear()
+        self._pending_photo = None
+        self._update_main_image_label()
 
         for widget in self.findChildren(QLineEdit):
             key = f"line:{widget.objectName()}"
@@ -463,7 +477,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
     def _connect_ucc_preview_signals(self) -> None:
         names = ("sp_soil_thk", "sp_protect_thk", "sp_lining_thk", "sp_hq_wall_thk")
         for name in names:
-            widget = getattr(self, name, None)
+            widget = getattr(self.ui, name, None)
             if isinstance(widget, QDoubleSpinBox):
                 try:
                     widget.valueChanged.connect(self._update_ucc_preview)
@@ -477,7 +491,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             return
         layers: list[tuple[str, float]] = []
         for cfg in getattr(self, "_ucc_layer_configs", []):
-            spin = getattr(self, cfg.spin_name, None)
+            spin = getattr(self.ui, cfg.spin_name, None)
             if spin is None or not hasattr(spin, "value"):
                 continue
             try:
@@ -492,6 +506,8 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             if placeholder:
                 label.setText(placeholder)
             return
+        if label.width() <= 0 or label.height() <= 0:
+            return
         pixmap = renderer.render(layers, label.size())
         if pixmap is None or pixmap.isNull():
             label.clear()
@@ -502,10 +518,61 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         label.setPixmap(pixmap)
         label.setText("")
 
+    def _update_main_image_label(self) -> None:
+        label = self._photo_label
+        if label is None:
+            return
+        if not self._image_bytes:
+            label.clear()
+            if self._photo_placeholder:
+                label.setText(self._photo_placeholder)
+            return
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(self._image_bytes):
+            label.clear()
+            return
+        self._pending_photo = pixmap
+        if label.width() <= 0 or label.height() <= 0:
+            return
+        size = label.size()
+        scaled = pixmap.scaled(
+            size,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+        try:
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        except Exception:
+            pass
+        label.setText("")
+        label.setPixmap(scaled)
+
     def eventFilter(self, obj, event):
         if obj is self._structure_preview_label and event.type() == QEvent.Type.Resize:
             self._update_ucc_preview()
+        if obj is self._photo_label and event.type() == QEvent.Type.Resize:
+            self._update_main_image_label()
         return super().eventFilter(obj, event)
+
+    def _lock_preview_label_size(self, label: QLabel | None, width: int, height: int) -> None:
+        if label is None:
+            return
+        policy = label.sizePolicy()
+        policy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
+        policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
+        label.setSizePolicy(policy)
+        label.setMinimumSize(width, height)
+        label.setMaximumSize(width, height)
+
+    def _ensure_unique_ucc(self, repo: SQLRepository, entity: UndergroundCommandPost) -> bool:
+        exclude_id = self._entity_id
+        if repo.value_exists(UndergroundCommandPost, "ucc_code", entity.ucc_code, exclude_id):
+            QMessageBox.warning(self, "提示", "指挥所代码已存在，请更换。")
+            return False
+        if repo.value_exists(UndergroundCommandPost, "ucc_name", entity.ucc_name, exclude_id):
+            QMessageBox.warning(self, "提示", "指挥所名称已存在，请更换。")
+            return False
+        return True
 
     def _apply_ucc_demo_defaults(self, force: bool = False) -> None:
         if getattr(self, "_ucc_demo_applied", False) and not force:
@@ -513,7 +580,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         field_names = ("sp_soil_thk", "sp_protect_thk", "sp_lining_thk", "sp_hq_wall_thk")
         current_values: list[float] = []
         for name in field_names:
-            spin = getattr(self, name, None)
+            spin = getattr(self.ui, name, None)
             if hasattr(spin, "value"):
                 try:
                     current_values.append(float(spin.value()))
@@ -531,7 +598,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             "sp_hq_wall_thk": 80.0,
         }
         for name, value in defaults.items():
-            spin = getattr(self, name, None)
+            spin = getattr(self.ui, name, None)
             if isinstance(spin, QDoubleSpinBox):
                 spin.setValue(value)
         demo_texts = {
@@ -541,7 +608,7 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
             "ed_hq_wall": "地下指挥中心：钢筋混凝土",
         }
         for attr, text in demo_texts.items():
-            widget = getattr(self, attr, None)
+            widget = getattr(self.ui, attr, None)
             if isinstance(widget, QLineEdit) and not widget.text():
                 widget.setText(text)
         self._ucc_demo_applied = True
@@ -564,10 +631,13 @@ class Target_UCC_AddWindow(QMainWindow,Ui_Frm_Target_UCC_Add):
         for widget in self.findChildren(QCheckBox):
             widget.setChecked(False)
 
-        self.lbl_image.clear()
+        if self._photo_label is not None:
+            self._photo_label.clear()
         self._image_bytes = None
         self._image_source_path = None
+        self._pending_photo = None
         self._entity_id = None
+        self._update_main_image_label()
         self._ucc_demo_applied = False
         self._apply_ucc_demo_defaults(force=True)
 

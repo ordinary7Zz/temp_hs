@@ -120,3 +120,13 @@ class Ui_Frm_DataRestore(object):
         self.groupBox_2.setTitle(_translate("Frm_DataRestore", "数据恢复"))
         self.btn_Restore.setText(_translate("Frm_DataRestore", "执行恢复"))
         self.label_2.setText(_translate("Frm_DataRestore", "选中的数据文件路径："))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Frm_DataRestore = QtWidgets.QWidget()
+    ui = Ui_Frm_DataRestore()
+    ui.setupUi(Frm_DataRestore)
+    Frm_DataRestore.show()
+    sys.exit(app.exec())

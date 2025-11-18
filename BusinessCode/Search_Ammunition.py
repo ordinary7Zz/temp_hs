@@ -297,9 +297,13 @@ class AmmunitionSearch(QDialog):
 
         # 1) 弹药类型
         if condition_data.get("am_type_enabled", False):
-            val = condition_data.get("am_type")
-            if _has_value(val):
-                filters.append(AmmunitionORM.am_type == val.strip())
+            val = (condition_data.get("am_type") or "").strip()
+            if val == "其他":
+                # 排除已知类型
+                exclude = ["钻地弹", "空地导弹", "子母弹", "巡航导弹", "布撒器"]
+                filters.append(~AmmunitionORM.am_type.in_(exclude))
+            elif _has_value(val):
+                filters.append(AmmunitionORM.am_type.like(f"%{val}%"))
 
         # 2) 国家
         if condition_data.get("country_enabled", False):

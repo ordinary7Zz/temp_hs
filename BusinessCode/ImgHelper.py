@@ -96,11 +96,14 @@ class ImgHelper:
         if pm.isNull():
             label.clear()
             return
-        if scaled and label.width() > 0 and label.height() > 0:
+        if scaled:
+            target_size = label.size()
+            if target_size.isEmpty() or target_size.width() <= 0 or target_size.height() <= 0:
+                return
             pm = pm.scaled(
-                label.size(),
+                target_size,
                 Qt.AspectRatioMode.KeepAspectRatio if keep_aspect else Qt.AspectRatioMode.IgnoreAspectRatio,
-                Qt.TransformationMode.SmoothTransformation if smooth else Qt.TransformationMode.FastTransformation
+                Qt.TransformationMode.SmoothTransformation if smooth else Qt.TransformationMode.FastTransformation,
             )
         label.setPixmap(pm)
 

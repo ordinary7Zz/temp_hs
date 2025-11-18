@@ -20,6 +20,10 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
 )
 
+
+
+
+
 SHELTER_FIELD_ORDER: Sequence[str] = (
     "id",
     "shelter_code",
@@ -53,45 +57,44 @@ SHELTER_FIELD_ORDER: Sequence[str] = (
     "fire_resistance",
     "shelter_status",
     "created_time",
-    "updated_time"
+    "updated_time",
 )
 
 
 
 SHELTER_HEADERS: Sequence[str] = (
-    "编号",
-    "掩蔽库代码",
-    "掩蔽库名称",
-    "国家/地区",
-    "基地/部队",
-    "掩蔽库照片",
-    "库容净宽",
-    "库容净高",
-    "库容净长",
-    "洞门宽度",
-    "洞门高度",
-    "结构形式",
-    "门体材料",
-    "门体厚度",
-    "伪装层材料",
-    "伪装层厚度",
-    "遮弹层材料",
-    "遮弹层厚度",
-    "分散层材料",
-    "分散层厚度",
-    "分散层钢筋配置",
-    "结构层材料",
-    "结构层厚度",
-    "结构层钢筋配置",
-    "抗爆能力",
-    "抗动能穿透",
-    "抗穿透深度",
-    "抗核冲波超压",
-    "抗辐射屏蔽",
-    "耐火极限",
-    "掩蔽库状态",
-    "创建时间",
-    "更新时间"
+    "??",
+    "?????",
+    "?????",
+    "??/??",
+    "??/??",
+    "?????",
+    "????(m)",
+    "????(m)",
+    "????(m)",
+    "????(m)",
+    "????(m)",
+    "????",
+    "????",
+    "????(cm)",
+    "?????",
+    "?????(cm)",
+    "?????",
+    "?????(cm)",
+    "?????",
+    "?????(cm)",
+    "???????",
+    "?????",
+    "?????(cm)",
+    "???????",
+    "????(kPa)",
+    "?????(kJ)",
+    "?????(cm)",
+    "??????(kPa)",
+    "?????(cm)",
+    "????(h)",
+    "????(UTC)",
+    "????(UTC)",
 )
 
 
@@ -299,11 +302,11 @@ class ExportWorker(QThread):
             code = row.get("shelter_code", "")
             shelter_id = row.get("id", "")
             if name and code:
-                display_title = f"{code} ： {name}"
+                display_title = f"{code} ? {name}"
             else:
                 display_title = name or code or "Unnamed Shelter"
             heading_parts = [part for part in (str(shelter_id).strip(), display_title) if part]
-            title_paragraph = document.add_paragraph(" ： ".join(heading_parts))
+            title_paragraph = document.add_paragraph(" ? ".join(heading_parts))
             title_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
             for run in title_paragraph.runs:
                 run.font.name = "Times New Roman"

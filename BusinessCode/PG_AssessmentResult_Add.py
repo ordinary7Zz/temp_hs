@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import QApplication, QMessageBox, QDialog
 
 from UIs.Frm_PG_AssessmentResult_Add import Ui_Frm_PG_AssessmentResult_Add
 from damage_models import AssessmentResult
-from damage_models.sql_repository_dbhelper import AssessmentResultRepository
+from damage_models.sql_repository_dbhelper import AssessmentResultRepository, DamageSceneRepository
 from DBCode.DBHelper import DBHelper
 from loguru import logger
 
@@ -36,6 +36,12 @@ class AssessmentResultEditor(QDialog):
 
         self.mode = mode
         self.edit_result_id = edit_result_id
+
+        self.damage_assessment = None
+        self.am = None
+        self.target = None
+        self.param = None
+        self.scene = None
 
         # 初始化UI组件
         self._init_comboboxes()
@@ -79,8 +85,8 @@ class AssessmentResultEditor(QDialog):
             # 设置占位符提示用户点击选择按钮
             self.ui.ed_scene_id.setPlaceholderText("点击【选择场景】按钮")
             self.ui.ed_parameter_id.setPlaceholderText("点击【选择参数】按钮")
-            self.ui.ed_ammunition_id.setPlaceholderText("点击【选择弹药】按钮")
-            self.ui.ed_target_id.setPlaceholderText("点击【选择目标】按钮")
+            self.ui.ed_ammunition_name.setPlaceholderText("点击【选择弹药】按钮")
+            self.ui.ed_target_name.setPlaceholderText("点击【选择目标】按钮")
 
             # 设置默认毁伤等级
             self.ui.cmb_damage_degree.setCurrentIndex(3)  # 默认重度毁伤
@@ -107,6 +113,8 @@ class AssessmentResultEditor(QDialog):
         try:
             repo = AssessmentResultRepository(db)
             result = repo.get_by_id(result_id)
+            self.load_am_from_db_by_AMID(result.AMID)
+            self.load_target_from_db_by_TarID(result.TargetType, result.TargetID)
 
             if not result:
                 raise Exception(f"未找到ID为 {result_id} 的毁伤结果")
@@ -114,8 +122,13 @@ class AssessmentResultEditor(QDialog):
             # 填充数据到界面
             self.ui.ed_scene_id.setText(str(result.DSID))
             self.ui.ed_parameter_id.setText(str(result.DPID))
-            self.ui.ed_ammunition_id.setText(str(result.AMID))
-            self.ui.ed_target_id.setText(str(result.TargetID))
+            self.ui.ed_ammunition_name.setText(str(self.am.am_name))
+            if result.TargetType == 1:
+                self.ui.ed_target_name.setText(str(self.target.runway_name))
+            elif result.TargetType == 2:
+                self.ui.ed_target_name.setText(str(self.target.shelter_name))
+            elif result.TargetType == 3:
+                self.ui.ed_target_name.setText(str(self.target.ucc_name))
 
             # 设置目标类型
             target_type_index = result.TargetType - 1 if result.TargetType > 0 else 0
@@ -164,13 +177,21 @@ class AssessmentResultEditor(QDialog):
                     # 填充场景ID
                     self.ui.ed_scene_id.setText(str(scene['DSID']))
 
+                    self.load_am_from_db_by_AMID(scene['AMID'])
+                    self.load_target_from_db_by_TarID(scene['TargetType'], scene['TargetID'])
+
                     # 自动填充关联的弹药ID、目标类型和目标ID
-                    if scene['AMID']:
-                        self.ui.ed_ammunition_id.setText(str(scene['AMID']))
+                    if self.am:
+                        self.ui.ed_ammunition_name.setText(str(self.am.am_name))
                     if scene['TargetType']:
                         self.ui.cmb_target_type.setCurrentIndex(scene['TargetType'] - 1)
-                    if scene['TargetID']:
-                        self.ui.ed_target_id.setText(str(scene['TargetID']))
+                    if self.target:
+                        if scene['TargetType'] == 1:
+                            self.ui.ed_target_name.setText(str(self.target.runway_name))
+                        elif scene['TargetType'] == 2:
+                            self.ui.ed_target_name.setText(str(self.target.shelter_name))
+                        elif scene['TargetType'] == 3:
+                            self.ui.ed_target_name.setText(str(self.target.ucc_name))
 
                     QMessageBox.information(self, "选择成功",
                         f"已选择场景：{scene['DSCode']} - {scene['DSName']}\n"
@@ -205,19 +226,19 @@ class AssessmentResultEditor(QDialog):
             if not self.ui.ed_parameter_id.text().strip():
                 QMessageBox.warning(self, "提示", "场景没有关联的参数，无法计算")
                 return
-            if not self.ui.ed_ammunition_id.text().strip():
+            if not self.ui.ed_ammunition_name.text().strip():
                 QMessageBox.warning(self, "提示", "场景没有关联的弹药，无法计算")
                 return
-            if not self.ui.ed_target_id.text().strip():
+            if not self.ui.ed_target_name.text().strip():
                 QMessageBox.warning(self, "提示", "场景没有关联的目标，无法计算")
                 return
 
             # 获取输入参数
             scene_id = int(self.ui.ed_scene_id.text().strip())
             parameter_id = int(self.ui.ed_parameter_id.text().strip())
-            ammunition_id = int(self.ui.ed_ammunition_id.text().strip())
+            ammunition_id = self.am.am_id
             target_type = self.ui.cmb_target_type.currentIndex() + 1
-            target_id = int(self.ui.ed_target_id.text().strip())
+            target_id = self.target.id
 
             logger.info(f"开始计算毁伤结果: 场景ID={scene_id}, 参数ID={parameter_id}, "
                        f"弹药ID={ammunition_id}, 目标类型={target_type}, 目标ID={target_id}")
@@ -269,10 +290,10 @@ class AssessmentResultEditor(QDialog):
             if not self.ui.ed_parameter_id.text().strip():
                 QMessageBox.warning(self, "验证失败", "参数ID不能为空")
                 return
-            if not self.ui.ed_ammunition_id.text().strip():
+            if not self.ui.ed_ammunition_name.text().strip():
                 QMessageBox.warning(self, "验证失败", "弹药ID不能为空")
                 return
-            if not self.ui.ed_target_id.text().strip():
+            if not self.ui.ed_target_name.text().strip():
                 QMessageBox.warning(self, "验证失败", "目标ID不能为空")
                 return
 
@@ -282,9 +303,9 @@ class AssessmentResultEditor(QDialog):
             # 设置关联信息
             result.DSID = int(self.ui.ed_scene_id.text().strip())
             result.DPID = int(self.ui.ed_parameter_id.text().strip())
-            result.AMID = int(self.ui.ed_ammunition_id.text().strip())
+            result.AMID = self.am.am_id
             result.TargetType = self.ui.cmb_target_type.currentIndex() + 1
-            result.TargetID = int(self.ui.ed_target_id.text().strip())
+            result.TargetID = self.target.id
 
             # 设置弹坑参数
             if self.ui.ed_depth.text().strip():
@@ -339,6 +360,90 @@ class AssessmentResultEditor(QDialog):
         """取消按钮点击"""
         self.finished_with_result.emit(False)
         self.close()
+
+    def load_target_from_db_by_TarID(self, target_type, target_id):
+        try:
+            db = DBHelper()
+            try:
+                from target_model.sql_repository import SQLRepository as TargetModelSQLRepository
+                from target_model.db import session_scope as target_session_scope
+                from target_model.entities import AirportRunway, AircraftShelter, UndergroundCommandPost
+                with target_session_scope() as session:
+                    target_repo = TargetModelSQLRepository(session)
+                if target_type == 1:
+                    self.target = target_repo.get(target_id, AirportRunway)
+                    self.target_name = self.target.runway_name
+                elif target_type == 2:
+                    self.target = target_repo.get(target_id, AircraftShelter)
+                    self.target_name = self.target.shelter_name
+                elif target_type == 3:
+                    self.target = target_repo.get(target_id, UndergroundCommandPost)
+                    self.target_name = self.target.ucc_name
+                if self.target:
+                    logger.info(f"成功加载弹目标信息: AMID={target_id}")
+                else:
+                    QMessageBox.warning(self, "警告", f"未找到ID为 {target_id} 的目标结果")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.exception(e)
+            QMessageBox.warning(self, "错误", f"加载关联信息失败：{e}")
+
+    def load_am_from_db_by_AMID(self, am_id: int):
+        try:
+            db = DBHelper()
+            try:
+                from am_models.sql_repository import SQLRepository as AmModelSQLRepository
+                from am_models.db import session_scope as am_session_scope
+                with am_session_scope() as session:
+                    am_repo = AmModelSQLRepository(session)
+                am = am_repo.get(am_id)
+                if am:
+                    self.am = am
+                    logger.info(f"成功加载弹药信息: AMID={am_id}")
+                else:
+                    QMessageBox.warning(self, "警告", f"未找到ID为 {am_id} 的弹药结果")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.exception(e)
+            QMessageBox.warning(self, "错误", f"加载关联信息失败：{e}")
+
+    def load_am_from_db_by_SceneID(self, scene_id: int):
+        try:
+            db = DBHelper()
+            try:
+                from damage_models.sql_repository_dbhelper import DamageSceneRepository
+                scene_repo = DamageSceneRepository(db)
+                scene = scene_repo.get_by_id(scene_id)
+                if scene:
+                    self.scene = scene
+                    logger.info(f"成功加载场景信息: SceneID={scene}")
+                else:
+                    QMessageBox.warning(self, "警告", f"未找到ID为 {scene_id} 的场景结果")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.exception(e)
+            QMessageBox.warning(self, "错误", f"加载关联信息失败：{e}")
+
+    def load_am_from_db_by_ParamID(self, param_id: int):
+        try:
+            db = DBHelper()
+            try:
+                from damage_models.sql_repository_dbhelper import DamageParameterRepository
+                param_repo = DamageParameterRepository(db)
+                param = param_repo.get_by_id(param_id)
+                if param:
+                    self.param = param
+                    logger.info(f"成功加载参数信息: ParamID={param_id}")
+                else:
+                    QMessageBox.warning(self, "警告", f"未找到ID为 {param_id} 的参数结果")
+            finally:
+                db.close()
+        except Exception as e:
+            logger.exception(e)
+            QMessageBox.warning(self, "错误", f"加载关联信息失败：{e}")
 
 
 if __name__ == "__main__":

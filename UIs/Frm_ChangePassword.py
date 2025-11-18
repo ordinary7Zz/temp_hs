@@ -87,3 +87,13 @@ class Ui_Frm_ChangePassword(object):
         self.label_5.setText(_translate("Frm_ChangePassword", "(*)"))
         self.label_6.setText(_translate("Frm_ChangePassword", "(*)"))
         self.label_7.setText(_translate("Frm_ChangePassword", "(*)"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Frm_ChangePassword = QtWidgets.QWidget()
+    ui = Ui_Frm_ChangePassword()
+    ui.setupUi(Frm_ChangePassword)
+    Frm_ChangePassword.show()
+    sys.exit(app.exec())

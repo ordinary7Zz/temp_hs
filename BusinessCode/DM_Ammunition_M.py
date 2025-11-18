@@ -61,15 +61,15 @@ class DYListWindow(QDialog):
         hh.setStretchLastSection(True)  # 不让最后一列自动吞空间
         for i in range(0, len(headers) - 1):
             hh.setSectionResizeMode(i, QHeaderView.ResizeMode.ResizeToContents)
-            hh.setSectionResizeMode(i, QHeaderView.ResizeMode.Fixed)  #设置列的宽度固定
-        tv.setColumnWidth(0, 90)  # 弹药类型
+            hh.setSectionResizeMode(i, QHeaderView.ResizeMode.Fixed)  # 设置列的宽度固定
+        tv.setColumnWidth(0, 70)  # 弹药类型
         tv.setColumnWidth(1, 60)  # 国家/地区,
         tv.setColumnWidth(2, 150)  # 中文名称
         tv.setColumnWidth(3, 70)  # 弹药型号
-        tv.setColumnWidth(4, 50)  #弹药全重
-        tv.setColumnWidth(5, 50)  #弹药长度
+        tv.setColumnWidth(4, 50)  # 弹药全重
+        tv.setColumnWidth(5, 50)  # 弹药长度
         tv.setColumnWidth(6, 50)  # 弹体直径
-        tv.setColumnWidth(7, 50)  #最大时速
+        tv.setColumnWidth(7, 50)  # 最大时速
         tv.setColumnWidth(8, 80)  # 战斗部类型
         tv.setColumnWidth(9, 70)  # 爆炸当量
         tv.setColumnWidth(10, 150)  # 操作

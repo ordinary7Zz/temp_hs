@@ -26,17 +26,17 @@ class SceneSelectorDialog(QDialog):
         """设置界面"""
         layout = QVBoxLayout(self)
 
-        # 搜索栏
-        search_layout = QHBoxLayout()
-        search_layout.addWidget(QLabel("搜索:"))
-        self.ed_search = QLineEdit()
-        self.ed_search.setPlaceholderText("输入场景编号或名称...")
-        search_layout.addWidget(self.ed_search)
-        self.btn_search = QPushButton("搜索")
-        self.btn_search.clicked.connect(self.load_data)
-        search_layout.addWidget(self.btn_search)
-        search_layout.addStretch()
-        layout.addLayout(search_layout)
+        # # 搜索栏
+        # search_layout = QHBoxLayout()
+        # search_layout.addWidget(QLabel("搜索:"))
+        # self.ed_search = QLineEdit()
+        # self.ed_search.setPlaceholderText("输入场景编号或名称...")
+        # search_layout.addWidget(self.ed_search)
+        # self.btn_search = QPushButton("搜索")
+        # self.btn_search.clicked.connect(self.load_data)
+        # search_layout.addWidget(self.btn_search)
+        # search_layout.addStretch()
+        # layout.addLayout(search_layout)
 
         # 表格
         self.table = QTableWidget()
@@ -68,12 +68,9 @@ class SceneSelectorDialog(QDialog):
             db = DBHelper()
             try:
                 repo = DamageSceneRepository(db)
-                search_keyword = self.ed_search.text().strip()
+                # search_keyword = self.ed_search.text().strip()
 
-                if search_keyword:
-                    scenes = repo.search(search_keyword)
-                else:
-                    scenes = repo.get_all()
+                scenes = repo.get_all()
 
                 self.table.setRowCount(0)
 

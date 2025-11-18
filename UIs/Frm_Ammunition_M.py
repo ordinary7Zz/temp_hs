@@ -56,3 +56,13 @@ class Ui_Frm_AmmunitionManagement(object):
         _translate = QtCore.QCoreApplication.translate
         self.btn_add.setText(_translate("Frm_AmmunitionManagement", "添加弹药毁伤数据"))
         self.btn_export.setText(_translate("Frm_AmmunitionManagement", "导出弹药毁伤数据"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Frm_AmmunitionManagement = QtWidgets.QDialog()
+    ui = Ui_Frm_AmmunitionManagement()
+    ui.setupUi(Frm_AmmunitionManagement)
+    Frm_AmmunitionManagement.show()
+    sys.exit(app.exec())

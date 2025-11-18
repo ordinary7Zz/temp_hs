@@ -56,18 +56,21 @@ def _sum_layers(*values: float | None) -> str:
     return f"{total:g} cm" if has_value else ""
 
 
-class Target_Runway_MWindow(QDialog, Ui_Frm_Target_Runway_M):
+class Target_Runway_MWindow(QDialog):
     def __init__(self) -> None:
         super().__init__()
         # ---- 组合式 UI ----
-        self.setupUi(self)
+        self.ui = Ui_Frm_Target_Runway_M()
+        self.ui.setupUi(self)
+
+        self.center_on_screen()  # 调用居中方法
+
         self._add_window: Target_Runway_AddWindow | None = None
         self._edit_window: Target_Runway_AddWindow | None = None
 
-        self.btn_add.clicked.connect(self.open_add_window)
-        self.btn_export.clicked.connect(self.open_export_dialog)
+        self.ui.btn_add.clicked.connect(self.open_add_window)
+        self.ui.btn_export.clicked.connect(self.open_export_dialog)
         self.refresh_table()  # load existing runway records when the window opens
-        self.center_on_screen()  # 调用居中方法
 
     # 窗体居中显示
     def center_on_screen(self):
@@ -100,7 +103,7 @@ class Target_Runway_MWindow(QDialog, Ui_Frm_Target_Runway_M):
 
     # ------------------------------------------------------------------ data/table
     def setup_table(self) -> None:
-        table_view = self.tb_dan
+        table_view = self.ui.tb_dan
 
         headers = [
             "机场名称",

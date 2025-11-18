@@ -4,6 +4,8 @@ import sys
 from pathlib import Path
 from typing import Iterable
 
+from loguru import logger
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -27,19 +29,22 @@ def _format_m(value: float | None) -> str:
         return str(value)
 
 
-class Target_Shelter_MWindow(QDialog,Ui_Frm_Target_Shelter_M):
+class Target_Shelter_MWindow(QDialog):
     def __init__(self) -> None:
         super().__init__()
         # ---- 组合式 UI ----
-        self.setupUi(self)
+        self.ui = Ui_Frm_Target_Shelter_M()
+        self.ui.setupUi(self)
+
+        self.setFixedSize(1000, 600)
 
         self.center_on_screen()  # 调用居中方法
 
         self._add_window: Target_Shelter_AddWindow | None = None
         self._edit_window: Target_Shelter_AddWindow | None = None
 
-        self.btn_add.clicked.connect(self.open_add_window)
-        self.btn_export.clicked.connect(self.open_export_dialog)
+        self.ui.btn_add.clicked.connect(self.open_add_window)
+        self.ui.btn_export.clicked.connect(self.open_export_dialog)
         self.refresh_table()  # load existing shelter records when the window opens
 
     # 窗体居中显示
@@ -73,15 +78,15 @@ class Target_Shelter_MWindow(QDialog,Ui_Frm_Target_Shelter_M):
 
     # ------------------------------------------------------------------ data/table
     def setup_table(self) -> None:
-        table_view = self.tb_dan
+        table_view = self.ui.tb_dan
 
         headers = [
             "名称 / 代码",
             "国家/地区",
             "基地/部队",
-            "库容净长(m)",
-            "库容净宽(m)",
-            "库容净高(m)",
+            "库容净长",
+            "库容净宽",
+            "库容净高",
             "伪装层材料",
             "遮弹层材料",
             "结构层材料",
@@ -97,6 +102,13 @@ class Target_Shelter_MWindow(QDialog,Ui_Frm_Target_Shelter_M):
             for idx in range(len(headers) - 1):
                 header.setSectionResizeMode(idx, QHeaderView.ResizeMode.Stretch)
             header.setSectionResizeMode(len(headers) - 1, QHeaderView.ResizeMode.ResizeToContents)
+
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
+        table_view.setColumnWidth(0, 200)
+
+        for i in range(3, 6):
+            header.setSectionResizeMode(i, QHeaderView.ResizeMode.Fixed)
+            table_view.setColumnWidth(i, 60)
 
         table_view.verticalHeader().setVisible(False)
         table_view.setSelectionBehavior(table_view.SelectionBehavior.SelectRows)

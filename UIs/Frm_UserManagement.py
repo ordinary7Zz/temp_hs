@@ -188,3 +188,13 @@ class Ui_Frm_UserManagement(object):
         self.btn_Delete.setText(_translate("Frm_UserManagement", "删除选中用户"))
         self.tv_UserInfo.setSortingEnabled(True)
         self.btn_ResetPwd.setText(_translate("Frm_UserManagement", "重置选中用户的密码"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Frm_UserManagement = QtWidgets.QWidget()
+    ui = Ui_Frm_UserManagement()
+    ui.setupUi(Frm_UserManagement)
+    Frm_UserManagement.show()
+    sys.exit(app.exec())

@@ -26,6 +26,7 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QCheckBox,
     QLabel,
+    QSizePolicy,
 )
 from BusinessCode.ImgHelper import ImgHelper
 from BusinessCode.structure_preview import LayerVisualConfig, LayeredStructureRenderer
@@ -35,15 +36,19 @@ from target_model.entities import AirportRunway
 from target_model.sql_repository import SQLRepository
 
 
-class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
+class Target_Runway_AddWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setupUi(self)
-        self.setFixedSize(770,700)
-        # 兼容不同UI版本的控件名
+
+        # ---- 组合式 UI ----
+        self.ui = Ui_Frm_Target_Runway_Add()
+        self.ui.setupUi(self)
+
+        # 兼容不同UI版本的控件名（从 self.ui 上解析）
         self.btn_choose_image = self._resolve_widget("btn_choose_image", "btn_choose_image_4")
         self.lbl_image = self._resolve_widget("lbl_image", "lbl_image_4", "lbl_image_5")
-        self._secondary_image_label = getattr(self, "lbl_image_5", None)
+        self._secondary_image_label = getattr(self.ui, "lbl_image_5", None)
+        self._lock_preview_label_size(self._secondary_image_label, 360, 180)
         self.cmb_cement_type = self._resolve_widget("cmb_cement_type", "cmb_cement_type_3")
 
         # 记录图片占位文字
@@ -51,6 +56,15 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         for img_label in (self.lbl_image, self._secondary_image_label):
             if img_label is not None:
                 self._image_placeholders[img_label.objectName()] = img_label.text()
+        self._photo_label = self.lbl_image
+        self._photo_placeholder = ""
+        if self._photo_label is not None:
+            self._photo_placeholder = self._image_placeholders.get(self._photo_label.objectName(), "")
+            try:
+                self._photo_label.setScaledContents(False)
+            except Exception:
+                pass
+            self._photo_label.installEventFilter(self)
 
         layer_texture_dir = PROJECT_ROOT / "UIstyles" / "images" / "runway_layers"
         # 剖面纹理图片位于 UIstyles/images/runway_layers（缺失时会自动回退为纯色填充）
@@ -67,12 +81,12 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         # 预览标题前缀缓存
         self._preview_label_bases: dict[str, str] = {}
         for attr in ("lbl_name_2", "lbl_country_2", "lbl_length_2", "lbl_heading_2"):
-            label = getattr(self, attr, None)
+            label = getattr(self.ui, attr, None)
             if label is not None:
                 self._preview_label_bases[attr] = label.text().strip()
 
-        self._runway_code_input = getattr(self, "ed_runway_code", None)
-        self._base_input = getattr(self, "ed_base", None) or getattr(self, "ed_airport_name_3", None)
+        self._runway_code_input = getattr(self.ui, "ed_runway_code", None)
+        self._base_input = getattr(self.ui, "ed_base", None) or getattr(self.ui, "ed_airport_name_3", None)
         self._current_entity: "AirportRunway | None" = None
 
         self._entity_id: int | None = None
@@ -81,10 +95,13 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         self._image_source_path: str | None = None
         self._draft_file = Path.home() / ".runway_editor_draft.json"
 
-        if hasattr(self, "cmb_country") and hasattr(self.cmb_country, "clear"):
-            self.cmb_country.clear()
-        if hasattr(self, "cmb_country"):
-            self.cmb_country.addItems([ "美国", "印度", "日本", "中国", "中国台湾", "俄罗斯", "法国", "英国", "德国", "其他"])
+        # 新建模式默认标题
+        self.setWindowTitle("添加机场跑道模型")
+
+        if hasattr(self.ui, "cmb_country") and hasattr(self.ui.cmb_country, "clear"):
+            self.ui.cmb_country.clear()
+        if hasattr(self.ui, "cmb_country"):
+            self.ui.cmb_country.addItems(["中国", "美国", "俄罗斯", "法国", "英国", "德国", "其他"])
 
         # 信号连接
         self.btn_choose_image.clicked.connect(self.on_choose_image)
@@ -93,8 +110,8 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
 
         # 显示“剖面结构模型”区域（若存在）
         try:
-            if hasattr(self, "gb_basic_2"):
-                self.gb_basic_2.setVisible(True)
+            if hasattr(self.ui, "gb_basic_2"):
+                self.ui.gb_basic_2.setVisible(True)
         except Exception:
             pass
 
@@ -110,56 +127,59 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         )
         if not filename:
             return
-        pixmap = QPixmap(filename)
-        if pixmap.isNull():
+        try:
+            data = Path(filename).read_bytes()
+        except Exception as exc:
+            QMessageBox.warning(self, "错误", f"读取图片失败：{exc}")
+            return
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(data):
             QMessageBox.warning(self, "错误", "无法加载图片")
             return
-        helper = ImgHelper.from_pixmap(pixmap)
-        helper.resize(long_side=1280, keep_aspect=True)
-        helper.compress_to_limit(200 * 1024, fmt="JPEG")
-        self._image_path = filename
         self._image_source_path = filename
-        self._image_bytes = helper.to_bytes(fmt="JPEG", quality=85)
-        self._set_preview_pixmap(helper.to_pixmap())
+        self._image_bytes = data
+        self._update_photo_label()
 
     # ------------------------------------------------------------------ load / save
     def load_entity(self, entity: "AirportRunway") -> None:
         self._current_entity = entity
         self._entity_id = entity.id
-        self._image_bytes = entity.runway_picture if isinstance(entity.runway_picture, (bytes, bytearray)) else None
+        if isinstance(entity.runway_picture, (bytes, bytearray)):
+            self._image_bytes = bytes(entity.runway_picture)
+        elif isinstance(entity.runway_picture, str) and entity.runway_picture:
+            try:
+                self._image_bytes = Path(entity.runway_picture).read_bytes()
+            except Exception:
+                self._image_bytes = None
+        else:
+            self._image_bytes = None
         self._image_path = None
         self._image_source_path = None
-        self._set_preview_pixmap(None)
-        if self._image_bytes:
-            try:
-                helper = ImgHelper.from_bytes(self._image_bytes)
-                self._set_preview_pixmap(helper.to_pixmap())
-            except Exception:
-                self._set_preview_pixmap(None)
+        self._update_photo_label()
         self.setWindowTitle("编辑机场跑道模型")
 
-        self.ed_airport_name.setText(entity.runway_name or "")
+        self.ui.ed_airport_name.setText(entity.runway_name or "")
         if self._runway_code_input is not None:
             try:
                 self._runway_code_input.setText(entity.runway_code or "")
             except Exception:
                 pass
-        if getattr(entity, "country", None) and hasattr(self, "cmb_country"):
-            self.cmb_country.setCurrentText(entity.country)
+        if getattr(entity, "country", None) and hasattr(self.ui, "cmb_country"):
+            self.ui.cmb_country.setCurrentText(entity.country)
         if self._base_input is not None and hasattr(self._base_input, "setText"):
             try:
                 self._base_input.setText(entity.base or "")
             except Exception:
                 pass
 
-        self._set_length_spin(self.sp_length, getattr(self, "cmb_length_unit", None), entity.r_length)
-        self._set_length_spin(self.sp_width, getattr(self, "cmb_width_unit", None), entity.r_width)
+        self._set_length_spin(self.ui.sp_length, getattr(self.ui, "cmb_length_unit", None), entity.r_length)
+        self._set_length_spin(self.ui.sp_width, getattr(self.ui, "cmb_width_unit", None), entity.r_width)
 
-        self._set_thickness_spin(self.sp_thk_concrete, getattr(self, "cmb_thk_concrete_unit", None),
+        self._set_thickness_spin(self.ui.sp_thk_concrete, getattr(self.ui, "cmb_thk_concrete_unit", None),
                                  entity.pccsc_thick)
-        self._set_spin_value(self.sp_fc_concrete, entity.pccsc_strength)
-        self._set_spin_value(self.sp_fr_concrete, entity.pccsc_flexural)
-        self._set_spin_value(self.sp_thk_concrete_2, entity.pccsc_freeze)
+        self._set_spin_value(self.ui.sp_fc_concrete, entity.pccsc_strength)
+        self._set_spin_value(self.ui.sp_fr_concrete, entity.pccsc_flexural)
+        self._set_spin_value(self.ui.sp_thk_concrete_2, entity.pccsc_freeze)
 
         if self.cmb_cement_type is not None and entity.pccsc_cement:
             try:
@@ -167,25 +187,25 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             except Exception:
                 pass
 
-        self._set_spin_value(self.sp_slab_w, entity.pccsc_block_size1)
-        self._set_spin_value(self.sp_slab_l, entity.pccsc_block_size2)
+        self._set_spin_value(self.ui.sp_slab_w, entity.pccsc_block_size1)
+        self._set_spin_value(self.ui.sp_slab_l, entity.pccsc_block_size2)
 
-        self._set_thickness_spin(self.sp_thk_cement, getattr(self, "cmb_thk_cement_unit", None),
+        self._set_thickness_spin(self.ui.sp_thk_cement, getattr(self.ui, "cmb_thk_cement_unit", None),
                                  entity.ctbc_thick)
-        self._set_spin_value(self.sp_fc_cement, entity.ctbc_strength)
-        self._set_spin_value(self.sp_fr_cement, entity.ctbc_flexural)
+        self._set_spin_value(self.ui.sp_fc_cement, entity.ctbc_strength)
+        self._set_spin_value(self.ui.sp_fr_cement, entity.ctbc_flexural)
         self._set_line_value("ed_cement_ratio", entity.ctbc_cement)
         self._set_line_value("ed_cement_ratio_2", entity.ctbc_compaction)
 
-        self._set_thickness_spin(self.sp_thk_crushed, getattr(self, "cmb_thk_crushed_unit", None),
+        self._set_thickness_spin(self.ui.sp_thk_crushed, getattr(self.ui, "cmb_thk_crushed_unit", None),
                                  entity.gcss_thick)
-        self._set_spin_value(self.sp_cbr_subgrade_2, entity.gcss_strength)
-        self._set_spin_value(self.sp_fr_concrete_2, entity.gcss_compaction)
+        self._set_spin_value(self.ui.sp_cbr_subgrade_2, entity.gcss_strength)
+        self._set_spin_value(self.ui.sp_fr_concrete_2, entity.gcss_compaction)
 
-        self._set_thickness_spin(self.sp_thk_crushed_2, getattr(self, "cmb_thk_crushed_unit_2", None),
+        self._set_thickness_spin(self.ui.sp_thk_crushed_2, getattr(self.ui, "cmb_thk_crushed_unit_2", None),
                                  entity.cs_thick)
-        self._set_spin_value(self.sp_cbr_subgrade_3, entity.cs_strength)
-        self._set_spin_value(self.sp_fr_concrete_3, entity.cs_compaction)
+        self._set_spin_value(self.ui.sp_cbr_subgrade_3, entity.cs_strength)
+        self._set_spin_value(self.ui.sp_fr_concrete_3, entity.cs_compaction)
         self._update_preview()
 
     def on_save_store(self) -> None:
@@ -196,9 +216,12 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         except ValueError as exc:
             QMessageBox.warning(self, "数据不完整", str(exc))
             return
+
         try:
             with session_scope() as session:
                 repo = SQLRepository(session)
+                if not self._ensure_unique_runway(repo, runway):
+                    return
                 if self._entity_id is None:
                     saved = repo.add(runway)
                     self._entity_id = getattr(saved, "id", None)
@@ -209,6 +232,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         except Exception as exc:
             QMessageBox.critical(self, "保存失败", f"写入数据库时出错：{exc}")
             return
+
         QMessageBox.information(self, "保存成功", "跑道数据已保存到数据库。")
         if self._draft_file.exists():
             try:
@@ -230,7 +254,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         for label_name, widget, validator in self._required_field_specs():
             if validator():
                 continue
-            label_widget = getattr(self, label_name, None)
+            label_widget = getattr(self.ui, label_name, None)
             label_text = getattr(label_widget, "text", lambda: label_name)()
             missing.append((self._normalize_label(label_text), widget))
 
@@ -250,20 +274,20 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
 
     def _required_field_specs(self) -> list[tuple[str, object, Callable[[], bool]]]:
         return [
-            ("RunwayName", self.ed_airport_name, lambda: bool(self.ed_airport_name.text().strip())),
-            ("Country", getattr(self, "cmb_country", None), lambda: bool(self._combo_text("cmb_country", ""))),
-            ("RLength", getattr(self, "sp_length", None),
-             lambda: getattr(self, "sp_length", None) is not None and self.sp_length.value() > 0),
-            ("RWidth", getattr(self, "sp_width", None),
-             lambda: getattr(self, "sp_width", None) is not None and self.sp_width.value() > 0),
-            ("PCCSCThick", getattr(self, "sp_thk_concrete", None),
-             lambda: getattr(self, "sp_thk_concrete", None) is not None and self.sp_thk_concrete.value() > 0),
-            ("CTBCThick", getattr(self, "sp_thk_cement", None),
-             lambda: getattr(self, "sp_thk_cement", None) is not None and self.sp_thk_cement.value() > 0),
-            ("GCSSThick", getattr(self, "sp_thk_crushed", None),
-             lambda: getattr(self, "sp_thk_crushed", None) is not None and self.sp_thk_crushed.value() > 0),
-            ("CSThick", getattr(self, "sp_thk_crushed_2", None),
-             lambda: getattr(self, "sp_thk_crushed_2", None) is not None and self.sp_thk_crushed_2.value() > 0),
+            ("RunwayName", self.ui.ed_airport_name, lambda: bool(self.ui.ed_airport_name.text().strip())),
+            ("Country", getattr(self.ui, "cmb_country", None), lambda: bool(self._combo_text("cmb_country", ""))),
+            ("RLength", getattr(self.ui, "sp_length", None),
+             lambda: getattr(self.ui, "sp_length", None) is not None and self.ui.sp_length.value() > 0),
+            ("RWidth", getattr(self.ui, "sp_width", None),
+             lambda: getattr(self.ui, "sp_width", None) is not None and self.ui.sp_width.value() > 0),
+            ("PCCSCThick", getattr(self.ui, "sp_thk_concrete", None),
+             lambda: getattr(self.ui, "sp_thk_concrete", None) is not None and self.ui.sp_thk_concrete.value() > 0),
+            ("CTBCThick", getattr(self.ui, "sp_thk_cement", None),
+             lambda: getattr(self.ui, "sp_thk_cement", None) is not None and self.ui.sp_thk_cement.value() > 0),
+            ("GCSSThick", getattr(self.ui, "sp_thk_crushed", None),
+             lambda: getattr(self.ui, "sp_thk_crushed", None) is not None and self.ui.sp_thk_crushed.value() > 0),
+            ("CSThick", getattr(self.ui, "sp_thk_crushed_2", None),
+             lambda: getattr(self.ui, "sp_thk_crushed_2", None) is not None and self.ui.sp_thk_crushed_2.value() > 0),
         ]
 
     @staticmethod
@@ -303,8 +327,8 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         if not base_text:
             base_text = self._line_text("ed_airport_name_3")
 
-        r_length = self._to_meters(self.sp_length.value(), self._combo_text("cmb_length_unit", "m"))
-        r_width = self._to_meters(self.sp_width.value(), self._combo_text("cmb_width_unit", "m"))
+        r_length = self._to_meters(self.ui.sp_length.value(), self._combo_text("cmb_length_unit", "m"))
+        r_width = self._to_meters(self.ui.sp_width.value(), self._combo_text("cmb_width_unit", "m"))
 
         runway = AirportRunway(
             runway_code=runway_code,
@@ -315,31 +339,31 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             r_length=r_length,
             r_width=r_width,
             pccsc_thick=self._to_centimeters(
-                self.sp_thk_concrete.value(), self._combo_text("cmb_thk_concrete_unit", "cm")
+                self.ui.sp_thk_concrete.value(), self._combo_text("cmb_thk_concrete_unit", "cm")
             ),
-            pccsc_strength=self.sp_fc_concrete.value(),
-            pccsc_flexural=self.sp_fr_concrete.value(),
-            pccsc_freeze=self.sp_thk_concrete_2.value(),
+            pccsc_strength=self.ui.sp_fc_concrete.value(),
+            pccsc_flexural=self.ui.sp_fr_concrete.value(),
+            pccsc_freeze=self.ui.sp_thk_concrete_2.value(),
             pccsc_cement=self._combo_text("cmb_cement_type", "").strip() or None,
-            pccsc_block_size1=self.sp_slab_w.value(),
-            pccsc_block_size2=self.sp_slab_l.value(),
+            pccsc_block_size1=self.ui.sp_slab_w.value(),
+            pccsc_block_size2=self.ui.sp_slab_l.value(),
             ctbc_thick=self._to_centimeters(
-                self.sp_thk_cement.value(), self._combo_text("cmb_thk_cement_unit", "cm")
+                self.ui.sp_thk_cement.value(), self._combo_text("cmb_thk_cement_unit", "cm")
             ),
-            ctbc_strength=self.sp_fc_cement.value(),
-            ctbc_flexural=self.sp_fr_cement.value(),
+            ctbc_strength=self.ui.sp_fc_cement.value(),
+            ctbc_flexural=self.ui.sp_fr_cement.value(),
             ctbc_cement=self._float_from_line("ed_cement_ratio"),
             ctbc_compaction=self._float_from_line("ed_cement_ratio_2"),
             gcss_thick=self._to_centimeters(
-                self.sp_thk_crushed.value(), self._combo_text("cmb_thk_crushed_unit", "cm")
+                self.ui.sp_thk_crushed.value(), self._combo_text("cmb_thk_crushed_unit", "cm")
             ),
-            gcss_strength=self.sp_cbr_subgrade_2.value(),
-            gcss_compaction=self.sp_fr_concrete_2.value(),
+            gcss_strength=self.ui.sp_cbr_subgrade_2.value(),
+            gcss_compaction=self.ui.sp_fr_concrete_2.value(),
             cs_thick=self._to_centimeters(
-                self.sp_thk_crushed_2.value(), self._combo_text("cmb_thk_crushed_unit_2", "cm")
+                self.ui.sp_thk_crushed_2.value(), self._combo_text("cmb_thk_crushed_unit_2", "cm")
             ),
-            cs_strength=self.sp_cbr_subgrade_3.value(),
-            cs_compaction=self.sp_fr_concrete_3.value(),
+            cs_strength=self.ui.sp_cbr_subgrade_3.value(),
+            cs_compaction=self.ui.sp_fr_concrete_3.value(),
             runway_status=getattr(self._current_entity, "runway_status", None),
         )
         if self._entity_id is not None:
@@ -351,7 +375,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
     # ------------------------------------------------------------------ helpers
     def _resolve_widget(self, *names):
         for name in names:
-            widget = getattr(self, name, None)
+            widget = getattr(self.ui, name, None)
             if widget is not None:
                 return widget
         raise AttributeError(f"Required widget not found (tried: {', '.join(names)})")
@@ -401,7 +425,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         return value
 
     def _combo_text(self, attr_name: str, fallback: str = "") -> str:
-        combo = getattr(self, attr_name, None)
+        combo = getattr(self.ui, attr_name, None)
         if combo is None or not hasattr(combo, "currentText"):
             return fallback
         text = combo.currentText()
@@ -417,7 +441,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             "sp_thk_crushed_2", "sp_cbr_subgrade_3", "sp_fr_concrete_3",
         ]
         for name in names:
-            widget = getattr(self, name, None)
+            widget = getattr(self.ui, name, None)
             if widget is None:
                 continue
             try:
@@ -457,6 +481,8 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             label.clear()
             label.setText(placeholder or "（未设置厚度）")
             return
+        if label.width() <= 0 or label.height() <= 0:
+            return
         pixmap = renderer.render(layers, label.size())
         if pixmap is None or pixmap.isNull():
             placeholder = self._image_placeholders.get(label.objectName(), "")
@@ -469,10 +495,29 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
     def eventFilter(self, obj, event):
         if obj is self._secondary_image_label and event.type() == QEvent.Type.Resize:
             self._update_structure_preview()
+        if obj is self._photo_label and event.type() == QEvent.Type.Resize:
+            self._update_photo_label()
         return super().eventFilter(obj, event)
 
+    def _lock_preview_label_size(self, label: QLabel | None, width: int, height: int) -> None:
+        if label is None:
+            return
+        policy = label.sizePolicy()
+        policy.setHorizontalPolicy(QSizePolicy.Policy.Fixed)
+        policy.setVerticalPolicy(QSizePolicy.Policy.Fixed)
+        label.setSizePolicy(policy)
+        label.setMinimumSize(width, height)
+        label.setMaximumSize(width, height)
+
+    def _ensure_unique_runway(self, repo: SQLRepository, runway: AirportRunway) -> bool:
+        exclude_id = self._entity_id
+        if repo.value_exists(AirportRunway, "runway_name", runway.runway_name, exclude_id):
+            QMessageBox.warning(self, "提示", "跑道名称已存在，请更换。")
+            return False
+        return True
+
     def _spin_value(self, name: str) -> float | None:
-        widget = getattr(self, name, None)
+        widget = getattr(self.ui, name, None)
         if widget is None or not hasattr(widget, "value"):
             return None
         try:
@@ -482,7 +527,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         return value
 
     def _line_text(self, name: str, default: str = "") -> str:
-        widget = getattr(self, name, None)
+        widget = getattr(self.ui, name, None)
         if widget is None or not hasattr(widget, "text"):
             return default
         text = widget.text()
@@ -503,7 +548,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             return None
 
     def _set_line_value(self, name: str, value: float | str | None) -> None:
-        widget = getattr(self, name, None)
+        widget = getattr(self.ui, name, None)
         if widget is None or not hasattr(widget, "setText"):
             return
         if value is None or value == "":
@@ -514,7 +559,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             widget.setText(f"{float(value):g}")
 
     def _set_preview_label(self, attr: str, parts: list[str]) -> None:
-        label = getattr(self, attr, None)
+        label = getattr(self.ui, attr, None)
         if label is None:
             return
         base = self._preview_label_bases.get(attr, label.text().strip())
@@ -596,24 +641,33 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             parts.append(f"压实模量≥{modulus:g} MPa")
         return parts
 
-    def _set_preview_pixmap(self, pixmap: QPixmap | None) -> None:
-        if self.lbl_image is None:
+    def _update_photo_label(self) -> None:
+        label = self._photo_label
+        if label is None:
             return
-        if pixmap is None or pixmap.isNull():
-            placeholder = self._image_placeholders.get(self.lbl_image.objectName(), "")
-            if placeholder:
-                self.lbl_image.setText(placeholder)
-            else:
-                self.lbl_image.clear()
+        if not self._image_bytes:
+            label.clear()
+            if self._photo_placeholder:
+                label.setText(self._photo_placeholder)
             return
-        target_size = self.lbl_image.size()
-        scaled = pixmap if target_size.isEmpty() else pixmap.scaled(
+        target_size = label.size()
+        if target_size.isEmpty():
+            return
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(self._image_bytes):
+            label.clear()
+            return
+        scaled = pixmap.scaled(
             target_size,
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation,
         )
-        self.lbl_image.setText("")
-        self.lbl_image.setPixmap(scaled)
+        try:
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        except Exception:
+            pass
+        label.setText("")
+        label.setPixmap(scaled)
 
     def _apply_required_marker_style(self) -> None:
         for label in self.findChildren(QLabel):
@@ -695,13 +749,7 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
             self._image_bytes = None
         self._image_path = None
         self._image_source_path = None
-        self._set_preview_pixmap(None)
-        if self._image_bytes:
-            try:
-                helper = ImgHelper.from_bytes(self._image_bytes)
-                self._set_preview_pixmap(helper.to_pixmap())
-            except Exception:
-                self._set_preview_pixmap(None)
+        self._update_photo_label()
 
         for widget in self.findChildren(QLineEdit):
             key = f"line:{widget.objectName()}"
@@ -768,12 +816,14 @@ class Target_Runway_AddWindow(QMainWindow, Ui_Frm_Target_Runway_Add):
         for widget in self.findChildren(QCheckBox):
             widget.setChecked(False)
 
-        self._set_preview_pixmap(None)
+        if self._photo_label is not None:
+            self._photo_label.clear()
         self._entity_id = None
         self._image_path = None
         self._image_source_path = None
         self._image_bytes = None
         self._current_entity = None
+        self._update_photo_label()
         self._update_preview()
 
     def _maybe_restore_draft(self) -> None:

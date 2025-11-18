@@ -28,7 +28,6 @@ class ParameterQuickEditor(QDialog):
             self.setWindowTitle("编辑毁伤参数" if parameter and parameter.DPID else "添加毁伤参数")
             self.setModal(True)
             self.resize(600, 500)
-
             logger.info(f"初始化参数快速编辑器，场景: {scene_code}")
 
             self._init_ui()

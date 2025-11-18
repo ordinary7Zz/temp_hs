@@ -19,19 +19,20 @@ from target_model.entities import UndergroundCommandPost
 from target_model.sql_repository import SQLRepository
 
 
-class Target_UCC_MWindow(QDialog,Ui_Frm_Target_UCC_M):
+class Target_UCC_MWindow(QDialog):
     def __init__(self) -> None:
         super().__init__()
         # ---- 组合式 UI ----
-        self.setupUi(self)
+        self.ui = Ui_Frm_Target_UCC_M()
+        self.ui.setupUi(self)
 
         self.center_on_screen()  # 调用居中方法
 
         self._add_window: Target_UCC_AddWindow | None = None
         self._edit_window: Target_UCC_AddWindow | None = None
 
-        self.btn_add.clicked.connect(self.open_add_window)
-        self.btn_export.clicked.connect(self.open_export_dialog)
+        self.ui.btn_add.clicked.connect(self.open_add_window)
+        self.ui.btn_export.clicked.connect(self.open_export_dialog)
         self.refresh_table()  # load existing underground command post records at startup
 
     # 窗体居中显示
@@ -77,10 +78,10 @@ class Target_UCC_MWindow(QDialog,Ui_Frm_Target_UCC_M):
 
     # ------------------------------------------------------------------ data/table
     def setup_table(self) -> None:
-        table_view = self.tb_dan
+        table_view = self.ui.tb_dan
 
         headers = [
-            "代码/名称",
+            "代码 / 名称",
             "国家/地区",
             "基地/部队",
             "所在位置",

@@ -209,7 +209,7 @@
     </item>
     <item>
      <property name="text">
-      <string>聚能战斗部</string>
+      <string>聚能穿甲战斗部</string>
      </property>
     </item>
     <item>
@@ -219,12 +219,22 @@
     </item>
     <item>
      <property name="text">
-      <string>穿甲战斗部</string>
+      <string>钻地侵彻战斗部</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>子母弹战斗部</string>
+      <string>子母弹战斗部(爆破子弹)</string>
+     </property>
+    </item>
+        <item>
+     <property name="text">
+      <string>子母弹战斗部(聚能穿甲子弹)</string>
+     </property>
+    </item>
+        <item>
+     <property name="text">
+      <string>子母弹战斗部(破片子弹)</string>
      </property>
     </item>
    </widget>

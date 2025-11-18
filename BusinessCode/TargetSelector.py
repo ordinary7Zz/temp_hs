@@ -50,18 +50,6 @@ class TargetSelectorDialog(QDialog):
         self.cmb_target_type.currentIndexChanged.connect(self._on_type_changed)
         search_layout.addWidget(self.cmb_target_type)
 
-        search_layout.addWidget(QLabel("搜索:"))
-        self.ed_search = QLineEdit()
-        self.ed_search.setPlaceholderText("输入目标名称或代码...")
-        search_layout.addWidget(self.ed_search)
-
-        self.btn_search = QPushButton("搜索")
-        self.btn_search.clicked.connect(self._on_search)
-        search_layout.addWidget(self.btn_search)
-
-        search_layout.addStretch()
-        layout.addLayout(search_layout)
-
         # 表格区域
         self.table_view = QTableView()
         self.table_view.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
@@ -126,7 +114,6 @@ class TargetSelectorDialog(QDialog):
                 sql = f"""
                 SELECT {id_field}, {code_field}, {name_field}, {extra_fields}
                 FROM {table_name}
-                WHERE {status_field} = 1
                 AND ({code_field} LIKE %s OR {name_field} LIKE %s)
                 ORDER BY {id_field} DESC
                 """
@@ -136,11 +123,11 @@ class TargetSelectorDialog(QDialog):
                 sql = f"""
                 SELECT {id_field}, {code_field}, {name_field}, {extra_fields}
                 FROM {table_name}
-                WHERE {status_field} = 1
                 ORDER BY {id_field} DESC
                 LIMIT 100
                 """
                 result = db.execute_query(sql)
+
 
             # 设置表格模型
             model = QStandardItemModel(0, len(headers))
@@ -188,94 +175,30 @@ class TargetSelectorDialog(QDialog):
         model = self.table_view.model()
         target_id = int(model.item(row, 0).text())
 
+        from target_model.sql_repository import SQLRepository as TargetModelSQLRepository
+        from target_model.db import session_scope as TargetModelSessionScope
+        with TargetModelSessionScope() as session:
+            target_repo = TargetModelSQLRepository(session)
+        from target_model.entities import AirportRunway, AircraftShelter, UndergroundCommandPost
+
         # 从数据库查询完整的目标信息
         db = DBHelper()
         try:
             # 根据目标类型查询不同的表
             if self.target_type == 1:  # 机场跑道
-                sql = """
-                SELECT RunwayID, RunwayCode, RunwayName, Country, Base, 
-                       RLength, RWidth, PCCSCThick, PCCSCStrength, PCCSCFlexural,
-                       CTBCThick, GCSSThick, CSThick
-                FROM Runway_Info 
-                WHERE RunwayID = %s
-                """
-                result = db.execute_query(sql, (target_id,))
-                if result and len(result) > 0:
-                    data = result[0]
-                    self.selected_target = {
-                        'TargetType': 1,
-                        'TargetID': data.get('RunwayID'),
-                        'TargetCode': data.get('RunwayCode', ''),
-                        'TargetName': data.get('RunwayName', ''),
-                        'Country': data.get('Country', ''),
-                        'Base': data.get('Base', ''),
-                        'RLength': data.get('RLength'),
-                        'RWidth': data.get('RWidth'),
-                        'PCCSCThick': data.get('PCCSCThick'),
-                        'PCCSCStrength': data.get('PCCSCStrength'),
-                        'PCCSCFlexural': data.get('PCCSCFlexural'),
-                        'CTBCThick': data.get('CTBCThick'),
-                        'GCSSThick': data.get('GCSSThick'),
-                        'CSThick': data.get('CSThick'),
-                    }
+                result = target_repo.get(target_id, AirportRunway)
+                if result:
+                    self.selected_target = result
 
             elif self.target_type == 2:  # 单机掩蔽库
-                sql = """
-                SELECT ShelterID, ShelterCode, ShelterName, Country, Base,
-                       ShelterWidth, ShelterHeight, ShelterLength,
-                       CaveWidth, CaveHeight, StructuralForm
-                FROM Shelter_Info 
-                WHERE ShelterID = %s
-                """
-                result = db.execute_query(sql, (target_id,))
-                if result and len(result) > 0:
-                    data = result[0]
-                    self.selected_target = {
-                        'TargetType': 2,
-                        'TargetID': data.get('ShelterID'),
-                        'TargetCode': data.get('ShelterCode', ''),
-                        'TargetName': data.get('ShelterName', ''),
-                        'Country': data.get('Country', ''),
-                        'Base': data.get('Base', ''),
-                        'ShelterWidth': data.get('ShelterWidth'),
-                        'ShelterHeight': data.get('ShelterHeight'),
-                        'ShelterLength': data.get('ShelterLength'),
-                        'CaveWidth': data.get('CaveWidth'),
-                        'CaveHeight': data.get('CaveHeight'),
-                        'StructuralForm': data.get('StructuralForm')
-                    }
+                result = target_repo.get(target_id, AircraftShelter)
+                if result:
+                    self.selected_target = result
 
             else:  # 地下指挥所
-                sql = """
-                SELECT UCCID, UCCCode, UCCName, Country, Base, Location,
-                       RockLayerMaterials, RockLayerThick, RockLayerStrength, 
-                       UCCWallMaterials, UCCWallThick, UCCWallStrength, 
-                       UCCWidth, UCCLength, UCCHeight
-                FROM UCC_Info 
-                WHERE UCCID = %s
-                """
-                result = db.execute_query(sql, (target_id,))
-                if result and len(result) > 0:
-                    data = result[0]
-                    self.selected_target = {
-                        'TargetType': 3,
-                        'TargetID': data.get('UCCID'),
-                        'TargetCode': data.get('UCCCode', ''),
-                        'TargetName': data.get('UCCName', ''),
-                        'Country': data.get('Country', ''),
-                        'Base': data.get('Base', ''),
-                        'Location': data.get('Location', ''),
-                        'RockLayerMaterials': data.get('RockLayerMaterials'),
-                        'RockLayerThick': data.get('RockLayerThick'),
-                        'RockLayerStrength': data.get('RockLayerStrength'),
-                        'UCCWallMaterials': data.get('UCCWallMaterials'),
-                        'UCCWallThick': data.get('UCCWallThick'),
-                        'UCCWallStrength': data.get('UCCWallStrength'),
-                        'UCCWidth': data.get('UCCWidth'),
-                        'UCCLength': data.get('UCCLength'),
-                        'UCCHeight': data.get('UCCHeight'),
-                    }
+                result = target_repo.get(target_id, UndergroundCommandPost)
+                if result:
+                    self.selected_target = result
 
             if self.selected_target:
                 self.accept()
@@ -380,7 +303,6 @@ class AmmunitionSelectorDialog(QDialog):
                 SELECT AMID, AMName, AMNameCN, AMType, AMModel, Country, 
                        WarheadType, WarheadName, ChargeAmount
                 FROM Ammunition_Info 
-                WHERE AMStatus = 1 
                 AND (AMName LIKE %s OR AMNameCN LIKE %s OR AMModel LIKE %s)
                 ORDER BY AMID DESC
                 """
@@ -391,7 +313,6 @@ class AmmunitionSelectorDialog(QDialog):
                 SELECT AMID, AMName, AMNameCN, AMType, AMModel, Country, 
                        WarheadType, WarheadName, ChargeAmount
                 FROM Ammunition_Info 
-                WHERE AMStatus = 1
                 ORDER BY AMID DESC
                 LIMIT 100
                 """
