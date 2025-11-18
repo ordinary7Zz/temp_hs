@@ -37,11 +37,13 @@ class DamageSceneRepository:
             scene.TargetID, scene.TargetCode, scene.DSStatus, now, now
         )
 
-        self.db.execute_query(sql, params)
+        sql_res = self.db.execute_query(sql, params)
+        if not sql_res:
+            return 0
 
         # 获取插入的ID
-        result = self.db.execute_query("SELECT LAST_INSERT_ID() as id")
-        return result[0]['id'] if result else 0
+        result = self.db.execute_query("SELECT DSID FROM DamageScene_Info WHERE DSCODE=%s", (scene.DSCode,))
+        return result[0] if result else 0
 
     def update(self, scene: DamageScene) -> bool:
         """更新毁伤场景"""
